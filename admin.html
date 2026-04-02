@@ -1546,7 +1546,7 @@ ${KNOWLEDGE_BASE}`
         }
 
         async function callGeminiAPI(userMessage, systemPrompt, config, chatHistory) {
-            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${config.model || 'gemini-2.0-flash'}:generateContent?key=${config.apiKey}`;
+            const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/${config.model || 'gemini-2.0-flash-001'}:generateContent?key=${config.apiKey}`;
 
             // Build contents array with proper format
             const contents = [];
@@ -1645,7 +1645,7 @@ ${KNOWLEDGE_BASE}`
 
             if (provider === 'gemini') {
                 endpointInput.value = 'https://generativelanguage.googleapis.com/v1beta/models/';
-                modelInput.value = 'gemini-2.0-flash';
+                modelInput.value = 'gemini-2.0-flash-001';
                 endpointInput.disabled = true;
             } else if (provider === 'anthropic') {
                 endpointInput.value = 'https://api.anthropic.com/v1/messages';

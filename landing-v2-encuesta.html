@@ -557,21 +557,21 @@ body{
 @keyframes truckDrive{to{transform:translateX(0)}}
 
 /* ==================== VIDEO SCREEN ==================== */
-.video-wrap{text-align:center;max-width:560px;width:100%}
+.video-wrap{text-align:center;max-width:720px;width:100%}
 .video-container{
   position:relative;
   width:100%;
-  max-width:340px;
+  max-width:720px;
   margin:1.5rem auto 1.5rem;
-  border-radius:20px;
+  border-radius:16px;
   overflow:hidden;
   border:2px solid var(--card-border);
   box-shadow:0 0 40px rgba(0,229,191,.1),0 20px 60px rgba(0,0,0,.4);
-  aspect-ratio:9/16;
+  aspect-ratio:16/9;
   background:#000;
 }
 .video-container video{
-  width:100%;height:100%;object-fit:cover;
+  width:100%;height:100%;object-fit:contain;
   display:block;
 }
 .video-play-overlay{
@@ -655,7 +655,7 @@ body{
   .insight-card{padding:2rem 1.5rem;border-radius:20px}
   .insight-stat{font-size:clamp(1.8rem,6vw,2.5rem)}
   .insight-desc{font-size:.85rem}
-  .video-container{max-width:280px;border-radius:16px}
+  .video-container{max-width:100%;border-radius:12px}
   .play-btn-circle{width:56px;height:56px}
 }
 @media(max-width:380px){

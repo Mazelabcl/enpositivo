@@ -1014,7 +1014,7 @@
             // Extract system prompt for system_instruction
             const systemPrompt = messages.find(m => m.role === 'system')?.content || '';
 
-            const model = config.model || 'gemini-2.0-flash';
+            const model = config.model || 'gemini-2.0-flash-001';
             const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.apiKey}`;
 
             const response = await fetch(url, {
