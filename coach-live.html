@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Coach de Voz - TransFarma</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%;background:#080B16;color:#fff;font-family:'Inter',sans-serif;overflow:hidden}
+
+        /* ===== LIGHT MODE ===== */
+        [data-theme="light"] body,
+        [data-theme="light"] .main-screen{background:#F5F7FA;color:#1A202C}
+        [data-theme="light"] .status-bar{background:#fff;border-color:#E2E8F0}
+        [data-theme="light"] .status-bar h1{color:#1A202C}
+        [data-theme="light"] .status-text{color:#4A5568!important}
+        [data-theme="light"] .transcript-area{background:#fff;border-color:#E2E8F0}
+        [data-theme="light"] .transcript-entry.ai{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08);color:#1A202C}
+        [data-theme="light"] .transcript-entry.user{color:#080B16}
+        [data-theme="light"] .mic-ring{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.08)}
+        [data-theme="light"] .controls-bar{background:#fff;border-color:#E2E8F0}
+        [data-theme="light"] .ctrl-btn{background:rgba(0,0,0,.05);color:#4A5568;border-color:rgba(0,0,0,.1)}
+        [data-theme="light"] .ctrl-btn:hover{background:rgba(0,0,0,.1)}
+        [data-theme="light"] .coach-select-card{background:rgba(0,0,0,.03);border-color:rgba(0,0,0,.1);color:#1A202C}
+        [data-theme="light"] .coach-select-card p{color:#4A5568}
+        [data-theme="light"] .back-link{color:#2B6CB0}
+        [data-theme="light"] .visualizer-bar{background:rgba(0,0,0,.15)}
+        [data-theme="light"] .error-toast{background:#fff;color:#1A202C;border-color:#E2E8F0}
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle{position:fixed;top:16px;right:16px;z-index:1000;background:rgba(108,92,231,.2);border:1px solid rgba(0,229,191,.3);color:#00E5BF;width:42px;height:42px;border-radius:50%;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:18px;transition:all .3s ease}
+        .theme-toggle:hover{background:rgba(108,92,231,.3);transform:scale(1.1)}
+        [data-theme="light"] .theme-toggle{background:rgba(0,0,0,.08);border-color:rgba(0,0,0,.15);color:#2B6CB0}
+
+        /* ===== COACH SELECT ===== */
+        #coachSelect{display:flex;flex-direction:column;height:100vh;padding:20px;overflow-y:auto;background:linear-gradient(135deg,#080B16 0%,#1a1e2e 100%)}
+        [data-theme="light"] #coachSelect{background:#F5F7FA}
+        .select-logo{text-align:center;margin:20px 0 10px}
+        .select-logo svg{max-width:240px;height:auto}
+        .select-header{text-align:center;margin-bottom:30px}
+        .select-header h1{font-family:'Space Grotesk',sans-serif;font-size:clamp(24px,7vw,36px);font-weight:700;background:linear-gradient(135deg,#00E5BF,#6C5CE7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:8px}
+        .select-header p{color:#b0b8d4;font-size:clamp(13px,3.5vw,16px)}
+        [data-theme="light"] .select-header p{color:#4A5568}
+        .select-grid{display:grid;grid-template-columns:1fr;gap:14px;max-width:500px;margin:0 auto}
+        .coach-select-card{background:rgba(0,229,191,.06);border:2px solid rgba(0,229,191,.2);border-radius:14px;padding:20px;cursor:pointer;transition:all .3s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;gap:16px}
+        .coach-select-card:hover{transform:translateY(-4px);border-color:#00E5BF;background:rgba(0,229,191,.12)}
+        .coach-select-card .emoji{font-size:40px;flex-shrink:0}
+        .coach-select-card h3{font-family:'Space Grotesk',sans-serif;font-size:17px;font-weight:600;color:#00E5BF;margin-bottom:4px}
+        .coach-select-card p{font-size:13px;color:#b0b8d4;line-height:1.4}
+        .back-link{display:inline-block;margin-top:30px;text-align:center;width:100%;color:#00E5BF;text-decoration:none;font-size:14px;opacity:.7;transition:opacity .2s}
+        .back-link:hover{opacity:1}
+
+        /* ===== MAIN SCREEN ===== */
+        .main-screen{display:none;flex-direction:column;height:100vh;background:linear-gradient(135deg,#080B16 0%,#0d1025 100%)}
+
+        /* Status bar */
+        .status-bar{display:flex;align-items:center;gap:12px;padding:14px 20px;background:rgba(108,92,231,.08);border-bottom:1px solid rgba(0,229,191,.15);min-height:60px}
+        .status-bar .back-btn{background:none;border:none;color:#00E5BF;font-size:22px;cursor:pointer;padding:6px;border-radius:8px}
+        .status-bar .back-btn:active{background:rgba(0,229,191,.15)}
+        .status-bar .avatar{font-size:28px;width:40px;height:40px;display:flex;align-items:center;justify-content:center;background:rgba(0,229,191,.1);border-radius:10px;flex-shrink:0}
+        .status-bar h1{font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;flex:1}
+        .status-text{font-size:12px;color:#b0b8d4;white-space:nowrap}
+        .status-dot{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:4px;vertical-align:middle}
+        .status-dot.connected{background:#00E5BF;box-shadow:0 0 6px rgba(0,229,191,.6)}
+        .status-dot.disconnected{background:#FD79A8}
+        .status-dot.connecting{background:#f0c040;animation:pulse 1s infinite}
+        @keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+        /* Transcript area */
+        .transcript-area{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:10px}
+        .transcript-area::-webkit-scrollbar{width:5px}
+        .transcript-area::-webkit-scrollbar-thumb{background:rgba(0,229,191,.25);border-radius:3px}
+        .transcript-entry{animation:slideUp .3s ease;max-width:88%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.5;word-wrap:break-word}
+        .transcript-entry.ai{align-self:flex-start;background:rgba(108,92,231,.15);border:1px solid rgba(0,229,191,.15);border-radius:14px 14px 14px 4px;color:#e0e6f2}
+        .transcript-entry.user{align-self:flex-end;background:linear-gradient(135deg,#00E5BF,#6C5CE7);color:#080B16;font-weight:500;border-radius:14px 14px 4px 14px}
+        .transcript-entry.system{align-self:center;background:none;color:#b0b8d4;font-size:12px;text-align:center;padding:6px 0;opacity:.7}
+        @keyframes slideUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+        /* Mic area */
+        .mic-area{display:flex;flex-direction:column;align-items:center;padding:20px 0 10px}
+        .mic-ring{width:120px;height:120px;border-radius:50%;background:rgba(108,92,231,.08);border:2px solid rgba(0,229,191,.15);display:flex;align-items:center;justify-content:center;position:relative;transition:all .3s ease}
+        .mic-ring.active{border-color:#00E5BF;background:rgba(0,229,191,.1);box-shadow:0 0 30px rgba(0,229,191,.2)}
+        .mic-ring.active .mic-btn{background:#00E5BF;color:#080B16}
+        .mic-ring.speaking{border-color:#6C5CE7;background:rgba(108,92,231,.15);box-shadow:0 0 30px rgba(108,92,231,.3)}
+        .mic-btn{width:72px;height:72px;border-radius:50%;border:none;background:rgba(0,229,191,.2);color:#00E5BF;font-size:28px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center;position:relative;z-index:2}
+        .mic-btn:hover{transform:scale(1.08)}
+        .mic-btn:disabled{opacity:.4;cursor:not-allowed;transform:none}
+        .mic-label{margin-top:10px;font-size:13px;color:#b0b8d4;text-align:center}
+        [data-theme="light"] .mic-label{color:#4A5568}
+
+        /* Visualizer */
+        .visualizer{display:flex;align-items:center;justify-content:center;gap:3px;height:30px;margin-top:8px}
+        .visualizer-bar{width:4px;height:4px;background:rgba(0,229,191,.4);border-radius:2px;transition:height .1s ease}
+        .visualizer.active .visualizer-bar{animation:vbar .6s ease-in-out infinite alternate;background:#00E5BF}
+        .visualizer.ai-speaking .visualizer-bar{animation:vbar .5s ease-in-out infinite alternate;background:#6C5CE7}
+        @keyframes vbar{0%{height:4px}100%{height:24px}}
+        .visualizer-bar:nth-child(1){animation-delay:0s}
+        .visualizer-bar:nth-child(2){animation-delay:.1s}
+        .visualizer-bar:nth-child(3){animation-delay:.2s}
+        .visualizer-bar:nth-child(4){animation-delay:.3s}
+        .visualizer-bar:nth-child(5){animation-delay:.15s}
+        .visualizer-bar:nth-child(6){animation-delay:.25s}
+        .visualizer-bar:nth-child(7){animation-delay:.05s}
+
+        /* Controls bar */
+        .controls-bar{display:flex;align-items:center;justify-content:center;gap:12px;padding:12px 20px;border-top:1px solid rgba(0,229,191,.1);background:rgba(0,0,0,.2)}
+        .ctrl-btn{background:rgba(108,92,231,.12);border:1px solid rgba(0,229,191,.15);color:#b0b8d4;padding:8px 16px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif}
+        .ctrl-btn:hover{background:rgba(0,229,191,.15);color:#00E5BF}
+        .ctrl-btn.danger{border-color:rgba(253,121,168,.3);color:#FD79A8}
+        .ctrl-btn.danger:hover{background:rgba(253,121,168,.15)}
+
+        /* Error toast */
+        .error-toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(100px);background:rgba(20,20,40,.95);color:#FD79A8;border:1px solid rgba(253,121,168,.3);padding:12px 20px;border-radius:10px;font-size:13px;z-index:999;transition:transform .3s ease;max-width:90%;text-align:center}
+        .error-toast.show{transform:translateX(-50%) translateY(0)}
+
+        /* Loading overlay */
+        .loading-overlay{position:fixed;inset:0;background:rgba(8,11,22,.85);display:none;align-items:center;justify-content:center;z-index:500;flex-direction:column;gap:16px}
+        .loading-overlay.show{display:flex}
+        .loading-spinner{width:40px;height:40px;border:3px solid rgba(0,229,191,.2);border-top-color:#00E5BF;border-radius:50%;animation:spin .8s linear infinite}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .loading-overlay p{color:#b0b8d4;font-size:14px}
+    </style>
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+
+    <!-- COACH SELECT -->
+    <div id="coachSelect">
+        <div class="select-logo">
+            <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+                <text x="150" y="60" font-family="Space Grotesk,sans-serif" font-size="48" font-weight="700" text-anchor="middle">
+                    <tspan fill="#7AB929">Trans</tspan><tspan fill="#2B6CB0">F</tspan><tspan fill="#7AB929">arma</tspan>
+                </text>
+                <path d="M 50 85 Q 75 75 100 85 T 150 85 T 200 85 T 250 85" stroke="#2B6CB0" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <text x="150" y="120" font-family="Inter,sans-serif" font-size="12" fill="#999" text-anchor="middle" font-weight="500">Logística Farmacéutica</text>
+            </svg>
+        </div>
+        <div class="select-header">
+            <h1>Coach de Voz en Vivo</h1>
+            <p>Habla con tu coach usando tu micrófono</p>
+        </div>
+        <div class="select-grid">
+            <div class="coach-select-card" data-coach="bienestar">
+                <div class="emoji">🧠</div>
+                <div>
+                    <h3>Coach de Bienestar</h3>
+                    <p>Conversación de voz sobre estrés, autocuidado y bienestar emocional.</p>
+                </div>
+            </div>
+            <div class="coach-select-card" data-coach="nutricion">
+                <div class="emoji">🥗</div>
+                <div>
+                    <h3>Coach de Nutrición</h3>
+                    <p>Tips de alimentación saludable para tu día a día en ruta o bodega.</p>
+                </div>
+            </div>
+            <div class="coach-select-card" data-coach="ingles">
+                <div class="emoji">🌎</div>
+                <div>
+                    <h3>Coach de Inglés</h3>
+                    <p>Practica pronunciación e inglés conversacional en tiempo real.</p>
+                </div>
+            </div>
+        </div>
+        <a class="back-link" href="coach.html">← Volver al coach de texto</a>
+    </div>
+
+    <!-- MAIN VOICE SCREEN -->
+    <div class="main-screen" id="mainScreen">
+        <div class="status-bar">
+            <button class="back-btn" id="backBtn">←</button>
+            <div class="avatar" id="coachAvatar">🧠</div>
+            <h1 id="coachTitle">Coach de Bienestar</h1>
+            <span class="status-text" id="statusText"><span class="status-dot disconnected" id="statusDot"></span>Desconectado</span>
+        </div>
+
+        <div class="transcript-area" id="transcript"></div>
+
+        <div class="mic-area">
+            <div class="mic-ring" id="micRing">
+                <button class="mic-btn" id="micBtn" title="Mantén presionado para hablar">🎙️</button>
+            </div>
+            <div class="visualizer" id="visualizer">
+                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div><div class="visualizer-bar"></div><div class="visualizer-bar"></div>
+                <div class="visualizer-bar"></div>
+            </div>
+            <div class="mic-label" id="micLabel">Toca para conectar</div>
+        </div>
+
+        <div class="controls-bar">
+            <button class="ctrl-btn" id="connectBtn">🔌 Conectar</button>
+            <button class="ctrl-btn danger" id="disconnectBtn" style="display:none">⏹ Desconectar</button>
+            <button class="ctrl-btn" id="clearBtn">🗑 Limpiar</button>
+        </div>
+    </div>
+
+    <!-- Loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-spinner"></div>
+        <p id="loadingText">Conectando con Gemini Live...</p>
+    </div>
+
+    <!-- Error toast -->
+    <div class="error-toast" id="errorToast"></div>
+
+<script>
+// ===== CONFIG & STATE =====
+const COACHES = {
+    bienestar: {
+        name: 'Coach de Bienestar',
+        emoji: '🧠',
+        systemPrompt: `Eres un coach de bienestar laboral cálido, cercano y profesional de TransFarma, empresa chilena de logística farmacéutica. Hablas con choferes, operarios de bodega y personal administrativo. Habla en español chileno amigable. Ofrece herramientas prácticas: respiración, manejo del estrés, autocuidado. Sé breve y conversacional porque estamos hablando por voz. Nunca des diagnósticos médicos. TransFarma tiene un programa de bienestar con pausas activas, protocolos de autocuidado y actividades grupales. Los colaboradores trabajan turnos rotativos, rutas largas, y enfrentan estrés físico y emocional. Tu rol es ser un apoyo cercano.`
+    },
+    nutricion: {
+        name: 'Coach de Nutrición',
+        emoji: '🥗',
+        systemPrompt: `Eres un coach de nutrición práctico de TransFarma, empresa chilena de logística farmacéutica. Trabajas con choferes en ruta, operarios de bodega con turnos rotativos. Da tips realistas y breves: qué comer en ruta, hidratación, snacks saludables, comida rápida nutritiva. Habla en español chileno amigable. Sé conversacional y breve porque hablamos por voz. No des planes estrictos. Los colaboradores a menudo comen en la ruta, tienen poco tiempo, y necesitan opciones prácticas.`
+    },
+    ingles: {
+        name: 'Coach de Inglés',
+        emoji: '🌎',
+        systemPrompt: `Eres un profesor de inglés amigable y paciente que trabaja con colaboradores de TransFarma en Chile. Mezcla español e inglés. Enseña pronunciación (fonética en español), frases útiles, vocabulario del día a día. Haz la conversación interactiva: pide que repitan, haz preguntas simples en inglés. Sé breve y conversacional ya que hablamos por voz. Celebra cada avance. Adapta el nivel al usuario.`
+    }
+};
+
+let state = {
+    coach: null,
+    session: null,
+    ws: null,
+    audioContext: null,
+    mediaStream: null,
+    workletNode: null,
+    isConnected: false,
+    isRecording: false,
+    isSpeaking: false,
+    playbackQueue: [],
+    isPlaying: false
+};
+
+// ===== THEME =====
+function initTheme(){
+    const t = localStorage.getItem('transfarma_theme');
+    if(t==='light') document.documentElement.setAttribute('data-theme','light');
+    updateThemeIcon();
+}
+function toggleTheme(){
+    const cur = document.documentElement.getAttribute('data-theme');
+    if(cur==='light'){document.documentElement.removeAttribute('data-theme');localStorage.setItem('transfarma_theme','dark')}
+    else{document.documentElement.setAttribute('data-theme','light');localStorage.setItem('transfarma_theme','light')}
+    updateThemeIcon();
+}
+function updateThemeIcon(){
+    const isLight = document.documentElement.getAttribute('data-theme')==='light';
+    document.getElementById('themeToggle').textContent = isLight ? '☀️' : '🌙';
+}
+document.getElementById('themeToggle').addEventListener('click', toggleTheme);
+initTheme();
+
+// ===== API CONFIG =====
+function getApiKey(){
+    try{
+        const cfg = JSON.parse(localStorage.getItem('transfarma_config')||'{}');
+        // Gemini Live needs a Gemini API key
+        if(cfg.provider==='gemini' && cfg.apiKey) return cfg.apiKey;
+        if(cfg.apiKey) return cfg.apiKey;
+        return null;
+    }catch(e){return null}
+}
+
+// ===== COACH SELECTION =====
+document.querySelectorAll('.coach-select-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+        const type = card.dataset.coach;
+        state.coach = type;
+        const info = COACHES[type];
+        document.getElementById('coachAvatar').textContent = info.emoji;
+        document.getElementById('coachTitle').textContent = info.name;
+        document.getElementById('coachSelect').style.display = 'none';
+        document.getElementById('mainScreen').style.display = 'flex';
+        addTranscript('system',`Seleccionaste ${info.name}. Toca "Conectar" para iniciar la conversación de voz.`);
+    });
+});
+
+document.getElementById('backBtn').addEventListener('click',()=>{
+    disconnect();
+    document.getElementById('mainScreen').style.display = 'none';
+    document.getElementById('coachSelect').style.display = 'flex';
+});
+
+// ===== TRANSCRIPT =====
+function addTranscript(type, text){
+    const area = document.getElementById('transcript');
+    const div = document.createElement('div');
+    div.className = `transcript-entry ${type}`;
+    div.textContent = text;
+    area.appendChild(div);
+    area.scrollTop = area.scrollHeight;
+}
+
+// ===== AUDIO WORKLET PROCESSOR (inline) =====
+function createWorkletBlob(){
+    const code = `
+class PCMProcessor extends AudioWorkletProcessor {
+    constructor(){super();this.buffer=[];this.bufferSize=2048;}
+    process(inputs){
+        const input=inputs[0];
+        if(input&&input[0]){
+            const data=input[0];
+            for(let i=0;i<data.length;i++){this.buffer.push(data[i])}
+            while(this.buffer.length>=this.bufferSize){
+                const chunk=this.buffer.splice(0,this.bufferSize);
+                const pcm16=new Int16Array(chunk.length);
+                for(let i=0;i<chunk.length;i++){
+                    const s=Math.max(-1,Math.min(1,chunk[i]));
+                    pcm16[i]=s<0?s*0x8000:s*0x7FFF;
+                }
+                this.port.postMessage({pcm:pcm16.buffer},[pcm16.buffer]);
+            }
+        }
+        return true;
+    }
+}
+registerProcessor('pcm-processor',PCMProcessor);
+`;
+    return URL.createObjectURL(new Blob([code],{type:'application/javascript'}));
+}
+
+// ===== RESAMPLE 48kHz -> 16kHz =====
+function resampleTo16k(audioCtx, buffer48k){
+    // Simple downsampling: pick every 3rd sample (48000/16000=3)
+    const ratio = audioCtx.sampleRate / 16000;
+    const newLen = Math.floor(buffer48k.length / ratio);
+    const result = new Float32Array(newLen);
+    for(let i=0;i<newLen;i++){
+        result[i] = buffer48k[Math.floor(i*ratio)];
+    }
+    return result;
+}
+
+// ===== CONNECT TO GEMINI LIVE =====
+async function connect(){
+    const apiKey = getApiKey();
+    if(!apiKey){
+        showError('No se encontró API Key de Gemini. Configúrala en /admin → Configuración.');
+        return;
+    }
+
+    showLoading(true,'Conectando con Gemini Live...');
+    setStatus('connecting','Conectando...');
+
+    try{
+        // Setup audio context & mic
+        state.audioContext = new (window.AudioContext||window.webkitAudioContext)({sampleRate:16000});
+
+        // Request microphone
+        state.mediaStream = await navigator.mediaDevices.getUserMedia({
+            audio:{
+                sampleRate:16000,
+                channelCount:1,
+                echoCancellation:true,
+                noiseSuppression:true
+            }
+        });
+
+        // Create AudioWorklet for PCM capture
+        const workletUrl = createWorkletBlob();
+        await state.audioContext.audioWorklet.addModule(workletUrl);
+        URL.revokeObjectURL(workletUrl);
+
+        const source = state.audioContext.createMediaStreamSource(state.mediaStream);
+        state.workletNode = new AudioWorkletNode(state.audioContext,'pcm-processor');
+
+        state.workletNode.port.onmessage = (e)=>{
+            if(state.isConnected && state.isRecording && e.data.pcm){
+                sendAudioChunk(e.data.pcm);
+            }
+        };
+
+        source.connect(state.workletNode);
+        state.workletNode.connect(state.audioContext.destination); // needed to keep processor alive
+
+        // Open WebSocket to Gemini Live
+        const model = 'gemini-2.0-flash-live-001';
+        const wsUrl = `wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=${apiKey}`;
+
+        state.ws = new WebSocket(wsUrl);
+
+        state.ws.onopen = ()=>{
+            // Send setup message
+            const setupMsg = {
+                setup: {
+                    model: `models/${model}`,
+                    generation_config: {
+                        response_modalities: ['AUDIO','TEXT'],
+                        speech_config: {
+                            voice_config: {
+                                prebuilt_voice_config: {
+                                    voice_name: 'Aoede'
+                                }
+                            }
+                        }
+                    },
+                    system_instruction: {
+                        parts: [{text: COACHES[state.coach].systemPrompt}]
+                    }
+                }
+            };
+            state.ws.send(JSON.stringify(setupMsg));
+        };
+
+        state.ws.onmessage = (event)=>{
+            handleServerMessage(event);
+        };
+
+        state.ws.onerror = (err)=>{
+            console.error('WebSocket error:', err);
+            showError('Error de conexión WebSocket. Verifica tu API Key de Gemini.');
+            disconnect();
+        };
+
+        state.ws.onclose = (e)=>{
+            console.log('WebSocket closed:', e.code, e.reason);
+            if(state.isConnected){
+                setStatus('disconnected','Desconectado');
+                state.isConnected = false;
+                updateUI();
+            }
+            showLoading(false);
+        };
+
+    }catch(err){
+        console.error('Connection error:', err);
+        showError('Error: ' + (err.message || 'No se pudo conectar. Verifica permisos de micrófono y API Key.'));
+        disconnect();
+        showLoading(false);
+    }
+}
+
+// ===== HANDLE SERVER MESSAGES =====
+let currentAIText = '';
+let textAccumulator = '';
+
+function handleServerMessage(event){
+    try{
+        let msg;
+        if(typeof event.data === 'string'){
+            msg = JSON.parse(event.data);
+        } else {
+            // Binary data - read as text
+            const reader = new FileReader();
+            reader.onload = ()=>{
+                try{
+                    msg = JSON.parse(reader.result);
+                    processMessage(msg);
+                }catch(e){console.error('Parse error:',e)}
+            };
+            reader.readAsText(event.data);
+            return;
+        }
+        processMessage(msg);
+    }catch(e){
+        console.error('Message handling error:',e);
+    }
+}
+
+function processMessage(msg){
+    // Setup complete
+    if(msg.setupComplete){
+        state.isConnected = true;
+        setStatus('connected','Conectado');
+        showLoading(false);
+        updateUI();
+        addTranscript('system','Conexión establecida. Mantén presionado el micrófono para hablar.');
+        return;
+    }
+
+    // Server content (audio + text)
+    if(msg.serverContent){
+        const sc = msg.serverContent;
+
+        if(sc.modelTurn && sc.modelTurn.parts){
+            for(const part of sc.modelTurn.parts){
+                // Audio response
+                if(part.inlineData && part.inlineData.mimeType && part.inlineData.mimeType.startsWith('audio/')){
+                    const b64 = part.inlineData.data;
+                    queueAudioPlayback(b64);
+                    setAISpeaking(true);
+                }
+                // Text response
+                if(part.text){
+                    textAccumulator += part.text;
+                }
+            }
+        }
+
+        // Turn complete
+        if(sc.turnComplete){
+            if(textAccumulator.trim()){
+                addTranscript('ai', textAccumulator.trim());
+            }
+            textAccumulator = '';
+            // Will stop speaking indicator when audio finishes playing
+            if(state.playbackQueue.length === 0 && !state.isPlaying){
+                setAISpeaking(false);
+            }
+        }
+    }
+
+    // Tool calls or other messages - just log
+    if(msg.toolCall){
+        console.log('Tool call received:', msg.toolCall);
+    }
+}
+
+// ===== SEND AUDIO =====
+function sendAudioChunk(pcmBuffer){
+    if(!state.ws || state.ws.readyState !== WebSocket.OPEN) return;
+
+    const int16 = new Int16Array(pcmBuffer);
+    const bytes = new Uint8Array(int16.buffer);
+    const b64 = btoa(String.fromCharCode(...bytes));
+
+    const msg = {
+        realtimeInput: {
+            mediaChunks: [{
+                mimeType: 'audio/pcm;rate=16000',
+                data: b64
+            }]
+        }
+    };
+
+    state.ws.send(JSON.stringify(msg));
+}
+
+// ===== AUDIO PLAYBACK =====
+let playbackCtx = null;
+
+function queueAudioPlayback(base64Data){
+    state.playbackQueue.push(base64Data);
+    if(!state.isPlaying){
+        playNextChunk();
+    }
+}
+
+async function playNextChunk(){
+    if(state.playbackQueue.length === 0){
+        state.isPlaying = false;
+        setAISpeaking(false);
+        return;
+    }
+
+    state.isPlaying = true;
+
+    if(!playbackCtx){
+        playbackCtx = new (window.AudioContext||window.webkitAudioContext)({sampleRate:24000});
+    }
+
+    // Resume if suspended
+    if(playbackCtx.state === 'suspended'){
+        await playbackCtx.resume();
+    }
+
+    const b64 = state.playbackQueue.shift();
+
+    try{
+        // Decode base64 to PCM Int16 at 24kHz
+        const raw = atob(b64);
+        const bytes = new Uint8Array(raw.length);
+        for(let i=0;i<raw.length;i++) bytes[i] = raw.charCodeAt(i);
+
+        const int16 = new Int16Array(bytes.buffer);
+        const float32 = new Float32Array(int16.length);
+        for(let i=0;i<int16.length;i++){
+            float32[i] = int16[i] / 32768;
+        }
+
+        const audioBuffer = playbackCtx.createBuffer(1, float32.length, 24000);
+        audioBuffer.getChannelData(0).set(float32);
+
+        const source = playbackCtx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(playbackCtx.destination);
+        source.onended = ()=>{
+            playNextChunk();
+        };
+        source.start();
+    }catch(e){
+        console.error('Playback error:', e);
+        playNextChunk();
+    }
+}
+
+// ===== DISCONNECT =====
+function disconnect(){
+    state.isRecording = false;
+    state.isConnected = false;
+
+    if(state.ws){
+        state.ws.close();
+        state.ws = null;
+    }
+    if(state.mediaStream){
+        state.mediaStream.getTracks().forEach(t=>t.stop());
+        state.mediaStream = null;
+    }
+    if(state.workletNode){
+        state.workletNode.disconnect();
+        state.workletNode = null;
+    }
+    if(state.audioContext){
+        state.audioContext.close().catch(()=>{});
+        state.audioContext = null;
+    }
+
+    state.playbackQueue = [];
+    state.isPlaying = false;
+    textAccumulator = '';
+
+    setStatus('disconnected','Desconectado');
+    setAISpeaking(false);
+    updateUI();
+    showLoading(false);
+}
+
+// ===== MIC BUTTON (push-to-talk) =====
+const micBtn = document.getElementById('micBtn');
+const micRing = document.getElementById('micRing');
+
+// Pointer events for push-to-talk
+micBtn.addEventListener('pointerdown',(e)=>{
+    e.preventDefault();
+    if(!state.isConnected){
+        connect();
+        return;
+    }
+    startRecording();
+});
+
+micBtn.addEventListener('pointerup',(e)=>{
+    e.preventDefault();
+    stopRecording();
+});
+
+micBtn.addEventListener('pointerleave',(e)=>{
+    stopRecording();
+});
+
+// Prevent context menu on long press (mobile)
+micBtn.addEventListener('contextmenu',(e)=>e.preventDefault());
+
+function startRecording(){
+    if(!state.isConnected || state.isRecording) return;
+    state.isRecording = true;
+    micRing.classList.add('active');
+    document.getElementById('visualizer').classList.add('active');
+    document.getElementById('micLabel').textContent = 'Escuchando... suelta para enviar';
+}
+
+function stopRecording(){
+    if(!state.isRecording) return;
+    state.isRecording = false;
+    micRing.classList.remove('active');
+    document.getElementById('visualizer').classList.remove('active');
+    document.getElementById('micLabel').textContent = 'Mantén presionado para hablar';
+}
+
+// ===== UI HELPERS =====
+function setStatus(type, text){
+    const dot = document.getElementById('statusDot');
+    const statusEl = document.getElementById('statusText');
+    dot.className = `status-dot ${type}`;
+    statusEl.innerHTML = '';
+    statusEl.appendChild(dot);
+    statusEl.appendChild(document.createTextNode(text));
+}
+
+function setAISpeaking(speaking){
+    state.isSpeaking = speaking;
+    const ring = document.getElementById('micRing');
+    const vis = document.getElementById('visualizer');
+    if(speaking){
+        ring.classList.add('speaking');
+        vis.classList.add('ai-speaking');
+        document.getElementById('micLabel').textContent = 'El coach está hablando...';
+    }else{
+        ring.classList.remove('speaking');
+        vis.classList.remove('ai-speaking');
+        if(state.isConnected && !state.isRecording){
+            document.getElementById('micLabel').textContent = 'Mantén presionado para hablar';
+        }
+    }
+}
+
+function updateUI(){
+    const connectBtn = document.getElementById('connectBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    if(state.isConnected){
+        connectBtn.style.display = 'none';
+        disconnectBtn.style.display = '';
+        micBtn.disabled = false;
+        document.getElementById('micLabel').textContent = 'Mantén presionado para hablar';
+    }else{
+        connectBtn.style.display = '';
+        disconnectBtn.style.display = 'none';
+        micBtn.disabled = false;
+        document.getElementById('micLabel').textContent = 'Toca para conectar';
+    }
+}
+
+function showLoading(show, text){
+    const el = document.getElementById('loadingOverlay');
+    if(text) document.getElementById('loadingText').textContent = text;
+    el.classList.toggle('show', show);
+}
+
+function showError(msg){
+    const toast = document.getElementById('errorToast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(()=>toast.classList.remove('show'), 5000);
+}
+
+// ===== BUTTON EVENTS =====
+document.getElementById('connectBtn').addEventListener('click', connect);
+document.getElementById('disconnectBtn').addEventListener('click', ()=>{
+    disconnect();
+    addTranscript('system','Sesión de voz finalizada.');
+});
+document.getElementById('clearBtn').addEventListener('click',()=>{
+    document.getElementById('transcript').innerHTML = '';
+});
+
+// ===== INIT =====
+updateUI();
+</script>
+</body>
+</html>

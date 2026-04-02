@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfarma Te Transforma 2026</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --primary:#00E5BF;
+  --primary-dark:#00B89A;
+  --accent:#6C5CE7;
+  --accent2:#FD79A8;
+  --warn:#FDCB6E;
+  --dark:#080B16;
+  --darker:#050810;
+  --card:rgba(255,255,255,.04);
+  --card-border:rgba(255,255,255,.07);
+  --card-hover:rgba(255,255,255,.08);
+  --text-main:rgba(255,255,255,.88);
+  --text-dim:rgba(255,255,255,.6);
+  --text-muted:rgba(255,255,255,.35);
+  --radius:16px;
+}
+
+[data-theme="light"]{
+  --dark: #F5F7FA;
+  --darker: #EDF0F5;
+  --card: rgba(0,0,0,.03);
+  --card-border: rgba(0,0,0,.08);
+  --card-hover: rgba(0,0,0,.06);
+  --text-main: rgba(0,0,0,.88);
+  --text-dim: rgba(0,0,0,.55);
+  --text-muted: rgba(0,0,0,.35);
+}
+html{overflow-x:hidden;scroll-behavior:smooth}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--dark);
+  color:var(--text-main);
+  overflow-x:hidden;
+  min-height:100vh;
+}
+
+/* ==================== PRELOADER ==================== */
+#preloader{
+  position:fixed;inset:0;z-index:10000;
+  background:var(--darker);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity 1s ease,transform 1s cubic-bezier(.4,0,.2,1);
+}
+#preloader.out{opacity:0;transform:scale(1.05);pointer-events:none}
+.pre-icon{width:80px;height:80px;margin-bottom:2rem;position:relative}
+.pre-icon svg{width:100%;height:100%}
+.pre-bar{width:180px;height:3px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.pre-bar-fill{height:100%;width:0;background:linear-gradient(90deg,var(--primary),var(--accent));border-radius:3px;transition:width .25s}
+
+/* ==================== CANVAS / BG ==================== */
+#bgCanvas{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* Road lines */
+.road-line{
+  position:fixed;width:3px;
+  background:linear-gradient(to bottom,transparent,var(--primary),transparent);
+  opacity:.06;z-index:1;pointer-events:none;
+  animation:roadDrift var(--dur) linear infinite;
+}
+@keyframes roadDrift{0%{transform:translateY(-100%)}100%{transform:translateY(100vh)}}
+
+/* Noise */
+.noise{
+  position:fixed;inset:0;z-index:2;pointer-events:none;opacity:.025;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+[data-theme="light"] .noise{opacity:0}
+[data-theme="light"] .road-line{opacity:.03}
+[data-theme="light"] .pre-bar{background:rgba(0,0,0,.06)}
+/* Gift section */
+[data-theme="light"] .gift-tap{color:rgba(0,0,0,.45)}
+[data-theme="light"] .gift-body{background:linear-gradient(135deg,#e8f5e9,#e3f2fd);border-color:rgba(0,0,0,.12)}
+[data-theme="light"] .gift-body .ribbon-v,[data-theme="light"] .gift-body .ribbon-h{background:var(--accent)}
+/* Pillar cards and modal */
+[data-theme="light"] .pillar-desc{color:rgba(0,0,0,.6)}
+[data-theme="light"] .pillar-modal-overlay{background:rgba(0,0,0,.5)}
+[data-theme="light"] .pillar-modal{background:#fff;border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .pm-close{color:#333;border-color:rgba(0,0,0,.15)}
+[data-theme="light"] .pm-close:hover{background:rgba(0,0,0,.05)}
+[data-theme="light"] .pm-desc{color:rgba(0,0,0,.7)}
+[data-theme="light"] .pm-video-text{color:rgba(0,0,0,.4)}
+/* Timeline and final section */
+[data-theme="light"] .mt-label{color:rgba(0,0,0,.5)}
+[data-theme="light"] .final-msg{color:rgba(0,0,0,.6)}
+[data-theme="light"] .final-footer{color:rgba(0,0,0,.4)}
+/* Survey - emoji labels */
+[data-theme="light"] .emoji-btn .em-label{color:rgba(0,0,0,.5)}
+/* Insight popup */
+[data-theme="light"] .insight-overlay{background:rgba(255,255,255,.85)}
+[data-theme="light"] .insight-card{background:#fff;border-color:rgba(0,0,0,.1)}
+[data-theme="light"] .insight-desc{color:rgba(0,0,0,.65)}
+[data-theme="light"] .insight-source{color:rgba(0,0,0,.4)}
+/* Option cards */
+[data-theme="light"] .opt-card::before{background:linear-gradient(135deg,rgba(0,229,191,.08),rgba(108,92,231,.08))}
+/* Reveal highlight */
+[data-theme="light"] .reveal-highlight{background:rgba(0,229,191,.05);border-color:rgba(0,229,191,.15)}
+/* Video overlay */
+[data-theme="light"] .video-play-overlay{background:rgba(0,0,0,.45)}
+/* Q counter badge */
+[data-theme="light"] .q-progress-track{background:rgba(0,0,0,.06)}
+
+/* ==================== THEME TOGGLE ==================== */
+.theme-toggle{
+  position:fixed;top:20px;right:20px;z-index:9998;
+  width:48px;height:48px;border-radius:50%;
+  background:var(--card);border:1px solid var(--card-border);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-size:1.3rem;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  -webkit-tap-highlight-color:transparent;
+}
+.theme-toggle:hover{background:var(--card-hover);transform:scale(1.1)}
+
+/* ==================== PROGRESS TOP ==================== */
+.top-progress{
+  position:fixed;top:0;left:0;height:3px;z-index:9999;
+  background:linear-gradient(90deg,var(--primary),var(--accent),var(--accent2));
+  width:0;transition:width .6s cubic-bezier(.4,0,.2,1);
+}
+
+/* ==================== SCREENS ==================== */
+.screen{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;
+  opacity:0;transform:translateY(30px) scale(.98);
+  transition:opacity .8s ease,transform .8s cubic-bezier(.16,1,.3,1);
+  pointer-events:none;
+}
+.screen.active{opacity:1;transform:none;pointer-events:all}
+.screen.exit-up{opacity:0;transform:translateY(-60px) scale(.96);pointer-events:none}
+.screen.hidden-done{display:none}
+
+/* ==================== SCREEN: INTRO ==================== */
+.tf-logo{
+  width:clamp(200px,60vw,260px);
+  margin-bottom:1.5rem;
+  display:block;
+  margin-left:auto;margin-right:auto;
+}
+.intro-wrap{text-align:center;max-width:640px;display:flex;flex-direction:column;align-items:center}
+.year-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.5rem 1.2rem;border-radius:100px;
+  background:var(--card);border:1px solid var(--card-border);
+  font-size:.75rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--primary);margin-bottom:2rem;
+  backdrop-filter:blur(12px);
+}
+.year-badge .pulse-dot{
+  width:6px;height:6px;border-radius:50%;background:var(--primary);
+  animation:dotPulse 2s ease infinite;
+}
+@keyframes dotPulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+.intro-title{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2.2rem,5.5vw,4rem);
+  font-weight:700;line-height:1.1;
+  margin-bottom:1.5rem;
+}
+.intro-title em{
+  font-style:normal;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.intro-sub{color:var(--text-dim);font-size:1.05rem;line-height:1.7;margin-bottom:2.5rem}
+.intro-sub strong{color:var(--text-main);font-weight:600}
+
+/* CTA Button */
+.cta-btn{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:1rem 2.5rem;border-radius:100px;border:none;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;font-weight:700;font-size:1.05rem;cursor:pointer;
+  font-family:inherit;
+  box-shadow:0 0 40px rgba(0,229,191,.2);
+  transition:transform .25s,box-shadow .25s;
+  animation:btnGlow 2s ease-in-out infinite;
+}
+.cta-btn:hover{transform:scale(1.05);box-shadow:0 0 50px rgba(0,229,191,.35)}
+@keyframes btnGlow{
+  0%,100%{box-shadow:0 0 30px rgba(0,229,191,.2)}
+  50%{box-shadow:0 0 50px rgba(0,229,191,.35)}
+}
+.cta-btn .arrow{font-size:1.2rem;transition:transform .3s}
+.cta-btn:hover .arrow{transform:translateX(4px)}
+
+/* ==================== SCREEN: SURVEY ==================== */
+.survey-wrap{width:100%;max-width:580px;text-align:center}
+.survey-header{margin-bottom:2rem}
+.q-counter{
+  font-size:.75rem;font-weight:600;color:var(--primary);
+  letter-spacing:.1em;text-transform:uppercase;margin-bottom:.5rem;
+}
+.q-progress-track{
+  width:100%;height:4px;background:rgba(255,255,255,.06);
+  border-radius:4px;overflow:hidden;margin-bottom:2rem;
+}
+.q-progress-fill{
+  height:100%;background:linear-gradient(90deg,var(--primary),var(--accent));
+  border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);
+}
+.q-text{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(1.2rem,3vw,1.6rem);
+  font-weight:600;line-height:1.4;
+  margin-bottom:2rem;
+}
+
+/* Option cards */
+.options-grid{display:flex;flex-direction:column;gap:.75rem;text-align:left}
+.opt-card{
+  padding:1rem 1.3rem;
+  background:var(--card);border:2px solid var(--card-border);
+  border-radius:14px;cursor:pointer;
+  display:flex;align-items:center;gap:1rem;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  position:relative;overflow:hidden;
+  -webkit-tap-highlight-color:transparent;
+}
+.opt-card::before{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,rgba(0,229,191,.06),rgba(108,92,231,.06));
+  opacity:0;transition:opacity .3s;
+}
+.opt-card:hover{border-color:rgba(0,229,191,.3);transform:translateX(6px)}
+.opt-card:hover::before{opacity:1}
+.opt-card.selected{
+  border-color:var(--primary);
+  background:rgba(0,229,191,.08);
+  transform:translateX(8px);
+}
+.opt-card.selected .opt-radio{background:var(--primary);border-color:var(--primary)}
+.opt-card.selected .opt-radio::after{transform:scale(1)}
+.opt-radio{
+  width:22px;height:22px;border-radius:50%;flex-shrink:0;
+  border:2px solid var(--card-border);position:relative;
+  transition:all .3s;display:flex;align-items:center;justify-content:center;
+}
+.opt-radio::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:#fff;transform:scale(0);transition:transform .3s cubic-bezier(.34,1.56,.64,1);
+}
+.opt-icon{font-size:1.3rem;flex-shrink:0}
+.opt-label{font-weight:500;font-size:.95rem;position:relative;z-index:1}
+
+/* Emoji scale */
+.emoji-scale{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap}
+.emoji-btn{
+  width:68px;height:80px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.3rem;
+  background:var(--card);border:2px solid var(--card-border);
+  border-radius:14px;cursor:pointer;
+  transition:all .3s cubic-bezier(.4,0,.2,1);
+  -webkit-tap-highlight-color:transparent;
+}
+.emoji-btn:hover{border-color:rgba(0,229,191,.3);transform:translateY(-4px)}
+.emoji-btn.selected{border-color:var(--primary);background:rgba(0,229,191,.08);transform:translateY(-6px) scale(1.05)}
+.emoji-btn .em{font-size:1.6rem;transition:transform .3s}
+.emoji-btn:hover .em{transform:scale(1.2)}
+.emoji-btn.selected .em{transform:scale(1.3)}
+.emoji-btn .em-label{font-size:.55rem;color:rgba(255,255,255,.55);font-weight:500}
+
+/* ==================== INSIGHT POPUP ==================== */
+.insight-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(5,8,16,.85);backdrop-filter:blur(12px);
+  display:flex;align-items:center;justify-content:center;
+  padding:2rem;
+  opacity:0;pointer-events:none;
+  transition:opacity .5s;
+}
+.insight-overlay.show{opacity:1;pointer-events:all}
+.insight-card{
+  max-width:420px;width:100%;
+  background:rgba(15,18,35,.95);
+  border:1px solid var(--card-border);
+  border-radius:24px;padding:2.5rem 2rem;
+  text-align:center;
+  transform:scale(.9) translateY(20px);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+}
+.insight-overlay.show .insight-card{transform:none}
+.insight-icon{font-size:2.5rem;margin-bottom:1rem}
+.insight-label{
+  font-size:.65rem;font-weight:700;letter-spacing:.15em;text-transform:uppercase;
+  color:var(--warn);margin-bottom:.8rem;
+}
+.insight-stat{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2rem,5vw,3rem);font-weight:700;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  margin-bottom:.5rem;
+}
+.insight-desc{color:rgba(255,255,255,.7);font-size:.9rem;line-height:1.6;margin-bottom:1.5rem}
+.insight-source{font-size:.65rem;color:rgba(255,255,255,.4);margin-bottom:1.5rem;font-style:italic}
+.insight-btn{
+  padding:.7rem 2rem;border-radius:100px;border:none;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;font-weight:700;font-size:.85rem;cursor:pointer;
+  transition:transform .2s,box-shadow .2s;font-family:inherit;
+}
+.insight-btn:hover{transform:scale(1.04);box-shadow:0 0 24px rgba(0,229,191,.25)}
+
+/* ==================== SCREEN: GIFT REVEAL ==================== */
+/* (truck-scene defined below in TRUCK SVG section) */
+@keyframes truckDrive_old{
+  from{
+    transform:translateX(-400px);
+    opacity:0;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+.gift-wrap{text-align:center;max-width:560px}
+.gift-pre-text{font-size:1.05rem;color:var(--text-dim);margin-bottom:1rem;line-height:1.7}
+.gift-pre-text strong{color:var(--primary);font-weight:700}
+
+.gift-box-v2{
+  width:180px;height:180px;margin:2rem auto;
+  position:relative;cursor:pointer;
+  animation:floatGift 3s ease-in-out infinite;
+  -webkit-tap-highlight-color:transparent;
+}
+@keyframes floatGift{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.gift-box-v2 .glow{
+  position:absolute;inset:-50px;
+  background:radial-gradient(circle,rgba(0,229,191,.2),transparent 70%);
+  border-radius:50%;animation:glowP 2s ease-in-out infinite;
+}
+@keyframes glowP{0%,100%{opacity:.4;transform:scale(1)}50%{opacity:.8;transform:scale(1.1)}}
+.gift-body{
+  width:100%;height:100%;position:relative;
+  background:linear-gradient(135deg,rgba(0,229,191,.12),rgba(108,92,231,.12));
+  border:2px solid rgba(0,229,191,.25);
+  border-radius:20px;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(10px);
+  transition:transform .6s cubic-bezier(.16,1,.3,1),opacity .6s;
+}
+.gift-body .ribbon-v{
+  position:absolute;width:3px;height:100%;left:50%;transform:translateX(-50%);
+  background:linear-gradient(to bottom,var(--primary),var(--accent));
+}
+.gift-body .ribbon-h{
+  position:absolute;height:3px;width:100%;top:50%;transform:translateY(-50%);
+  background:linear-gradient(to right,var(--primary),var(--accent));
+}
+.gift-body .bow{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:2rem}
+.gift-tap{
+  font-size:.85rem;color:rgba(255,255,255,.5);margin-top:.5rem;
+}
+.gift-tap span{color:var(--primary);font-weight:600}
+/* Flashing tap hint */
+.gift-tap-arrow{
+  display:inline-block;
+  animation:tapBounce 1.5s ease infinite;
+  font-size:1.2rem;margin-left:.3rem;
+}
+@keyframes tapBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
+
+/* ==================== SCREEN: REVEAL ==================== */
+.reveal-wrap{max-width:700px;width:100%;text-align:center}
+.reveal-big{
+  font-family:'Space Grotesk',sans-serif;
+  font-size:clamp(2rem,6vw,3.5rem);font-weight:700;
+  line-height:1.15;margin-bottom:1.5rem;
+}
+.reveal-big em{
+  font-style:normal;display:block;
+  background:linear-gradient(135deg,var(--primary),var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  background-size:200% 200%;animation:gradShift 4s ease infinite;
+}
+@keyframes gradShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+.reveal-desc{
+  color:var(--text-dim);font-size:1.05rem;line-height:1.8;
+  margin-bottom:2rem;
+}
+.reveal-highlight{
+  color:var(--text-main);font-weight:500;font-size:1rem;
+  line-height:1.7;margin-bottom:2.5rem;
+  padding:1.5rem;
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  text-align:left;
+}
+
+/* Program pillars */
+.pillars{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem;margin-bottom:3rem;text-align:left}
+@media(max-width:600px){.pillars{grid-template-columns:1fr}}
+.pillar{
+  padding:1.3rem;
+  background:var(--card);border:1px solid var(--card-border);
+  border-radius:var(--radius);
+  transition:all .4s;opacity:0;transform:translateY(20px);
+}
+.pillar.vis{opacity:1;transform:none}
+.pillar{cursor:pointer}
+.pillar:hover{border-color:rgba(0,229,191,.2);background:var(--card-hover)}
+.pillar-tap{font-size:.65rem;color:var(--primary);margin-top:.5rem;font-weight:600;opacity:.7}
+
+/* Pillar detail modal */
+.pillar-modal-overlay{
+  position:fixed;inset:0;z-index:9000;
+  background:rgba(5,8,16,.88);backdrop-filter:blur(14px);
+  display:flex;align-items:center;justify-content:center;
+  padding:1.5rem;
+  opacity:0;pointer-events:none;transition:opacity .4s;
+}
+.pillar-modal-overlay.show{opacity:1;pointer-events:all}
+.pillar-modal{
+  max-width:460px;width:100%;
+  background:rgba(15,18,35,.97);
+  border:1px solid var(--card-border);
+  border-radius:24px;padding:2rem;
+  transform:scale(.92) translateY(16px);
+  transition:transform .5s cubic-bezier(.16,1,.3,1);
+  max-height:85vh;overflow-y:auto;
+}
+.pillar-modal-overlay.show .pillar-modal{transform:none}
+.pm-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.2rem}
+.pm-title-row{display:flex;align-items:center;gap:.6rem}
+.pm-icon{font-size:1.6rem}
+.pm-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:1.2rem}
+.pm-close{
+  width:32px;height:32px;border-radius:50%;border:1px solid var(--card-border);
+  background:transparent;color:#fff;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:background .2s;
+}
+.pm-close:hover{background:rgba(255,255,255,.08)}
+.pm-desc{color:rgba(255,255,255,.75);font-size:.9rem;line-height:1.7;margin-bottom:1.5rem}
+.pm-video-placeholder{
+  width:100%;aspect-ratio:16/9;
+  background:var(--card);border:2px dashed var(--card-border);
+  border-radius:14px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.6rem;
+  cursor:default;
+}
+.pm-video-play{
+  width:50px;height:50px;border-radius:50%;
+  background:rgba(0,229,191,.15);border:2px solid rgba(0,229,191,.3);
+  display:flex;align-items:center;justify-content:center;
+}
+.pm-video-play svg{opacity:.5}
+.pm-video-text{font-size:.75rem;color:rgba(255,255,255,.4);text-align:center;line-height:1.4;max-width:240px}
+.pillar-head{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem}
+.pillar-icon{font-size:1.2rem}
+.pillar-title{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.95rem}
+.pillar-desc{font-size:.8rem;color:rgba(255,255,255,.65);line-height:1.5}
+
+/* Timeline mini */
+.mini-timeline{
+  display:flex;align-items:flex-start;justify-content:center;gap:0;
+  margin-bottom:3rem;flex-wrap:wrap;
+}
+.mt-item{
+  display:flex;flex-direction:column;align-items:center;
+  padding:.5rem .8rem;position:relative;
+  opacity:0;transform:translateY(10px);
+}
+.mt-item.vis{opacity:1;transform:none}
+.mt-dot{
+  width:12px;height:12px;border-radius:50%;
+  background:var(--primary);margin-bottom:.4rem;
+  box-shadow:0 0 12px rgba(0,229,191,.4);
+}
+.mt-line{width:30px;height:2px;background:linear-gradient(90deg,var(--primary),var(--accent));margin-top:5px;align-self:center;flex-shrink:0}
+.mt-month{font-size:.65rem;font-weight:700;color:var(--primary);letter-spacing:.05em}
+.mt-label{font-size:.6rem;color:rgba(255,255,255,.5);max-width:80px;text-align:center;line-height:1.3;margin-top:.2rem}
+
+.final-badge{
+  display:inline-flex;align-items:center;gap:.6rem;
+  padding:.9rem 2rem;border-radius:100px;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  font-weight:700;font-size:1rem;color:#fff;
+  box-shadow:0 0 40px rgba(0,229,191,.25);
+  margin-bottom:1.5rem;
+}
+.final-msg{
+  font-size:.85rem;color:rgba(255,255,255,.65);line-height:1.6;
+  max-width:480px;margin:0 auto 1rem;
+}
+.final-footer{font-size:.7rem;color:rgba(255,255,255,.35);margin-top:1rem}
+
+/* ==================== CONFETTI SPECTACULAR ==================== */
+.confetti{
+  position:fixed;pointer-events:none;z-index:9999;
+}
+/* Burst from center */
+.confetti.burst{
+  animation:confBurst var(--t) cubic-bezier(.15,.85,.35,1) forwards;
+}
+@keyframes confBurst{
+  0%{opacity:1;transform:translate(0,0) rotate(0deg) scale(0)}
+  15%{opacity:1;transform:translate(calc(var(--tx)*.2),calc(var(--ty)*.2)) rotate(90deg) scale(1.2)}
+  100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(var(--rot)) scale(.2)}
+}
+/* Rain from top */
+.confetti.rain{
+  animation:confRain var(--t) cubic-bezier(.1,.6,.3,1) forwards;
+}
+@keyframes confRain{
+  0%{opacity:0;transform:translateY(-20px) rotate(0deg) scale(.5)}
+  10%{opacity:1;transform:translateY(0) scale(1)}
+  100%{opacity:0;transform:translate(var(--tx),100vh) rotate(var(--rot)) scale(.3)}
+}
+/* Sparkle */
+.confetti.sparkle{
+  border-radius:50% !important;
+  box-shadow:0 0 6px var(--glow);
+  animation:confSparkle var(--t) ease-out forwards;
+}
+@keyframes confSparkle{
+  0%{opacity:0;transform:scale(0)}
+  20%{opacity:1;transform:scale(1.5)}
+  50%{opacity:1;transform:translate(var(--tx),calc(var(--ty)*.5)) scale(1)}
+  100%{opacity:0;transform:translate(calc(var(--tx)*1.5),var(--ty)) scale(0)}
+}
+/* Streamer / ribbon */
+.confetti.streamer{
+  border-radius:2px !important;
+  animation:confStreamer var(--t) ease-out forwards;
+}
+@keyframes confStreamer{
+  0%{opacity:1;transform:translate(0,0) rotate(0deg) scaleX(1)}
+  100%{opacity:0;transform:translate(var(--tx),100vh) rotate(var(--rot)) scaleX(.3)}
+}
+/* Flash overlay */
+.confetti-flash{
+  position:fixed;inset:0;z-index:9998;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,rgba(0,229,191,.15),transparent 70%);
+  opacity:0;animation:flashBang .6s ease-out forwards;
+}
+@keyframes flashBang{0%{opacity:1}100%{opacity:0}}
+
+/* ==================== TRUCK SVG ==================== */
+.truck-scene{width:280px;height:auto;margin:0 auto 1.5rem;position:relative;overflow:visible;display:flex;justify-content:center}
+.truck-svg{width:280px;height:auto;animation:truckDrive 1.5s cubic-bezier(.4,0,.2,1) forwards;transform:translateX(-300px)}
+@keyframes truckDrive{to{transform:translateX(0)}}
+
+/* ==================== VIDEO SCREEN ==================== */
+.video-wrap{text-align:center;max-width:560px;width:100%}
+.video-container{
+  position:relative;
+  width:100%;
+  max-width:340px;
+  margin:1.5rem auto 1.5rem;
+  border-radius:20px;
+  overflow:hidden;
+  border:2px solid var(--card-border);
+  box-shadow:0 0 40px rgba(0,229,191,.1),0 20px 60px rgba(0,0,0,.4);
+  aspect-ratio:9/16;
+  background:#000;
+}
+.video-container video{
+  width:100%;height:100%;object-fit:cover;
+  display:block;
+}
+.video-play-overlay{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.45);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:opacity .4s;
+  z-index:2;
+}
+.video-play-overlay.hidden{opacity:0;pointer-events:none}
+.play-overlay-content{
+  display:flex;flex-direction:column;align-items:center;gap:1rem;
+}
+.play-btn-circle{
+  width:72px;height:72px;border-radius:50%;
+  background:rgba(0,229,191,.9);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 30px rgba(0,229,191,.5);
+  transition:transform .3s,box-shadow .3s;
+  animation:playPulse 2s ease-in-out infinite;
+}
+@keyframes playPulse{
+  0%,100%{box-shadow:0 0 30px rgba(0,229,191,.4)}
+  50%{box-shadow:0 0 50px rgba(0,229,191,.7)}
+}
+.play-btn-circle:hover{transform:scale(1.1);box-shadow:0 0 50px rgba(0,229,191,.6)}
+.play-btn-circle svg{margin-left:4px}
+.play-label{
+  font-size:.85rem;font-weight:600;color:#fff;text-align:center;
+  line-height:1.4;text-shadow:0 1px 8px rgba(0,0,0,.6);
+}
+.play-label span{
+  color:var(--primary);font-weight:700;font-size:.95rem;
+}
+.video-caption{
+  font-size:.8rem;color:var(--text-dim);margin-top:1rem;line-height:1.5;
+}
+.video-next-btn{
+  display:inline-flex;align-items:center;gap:.5rem;
+  margin-top:1.5rem;
+  padding:.8rem 2rem;border-radius:100px;border:none;
+  background:linear-gradient(135deg,var(--primary),var(--accent));
+  color:#fff;font-weight:700;font-size:.95rem;cursor:pointer;
+  font-family:inherit;
+  transition:transform .25s,box-shadow .25s;
+  box-shadow:0 0 24px rgba(0,229,191,.2);
+}
+.video-next-btn:hover{transform:scale(1.04);box-shadow:0 0 36px rgba(0,229,191,.3)}
+.video-next-btn .arrow{transition:transform .3s}
+.video-next-btn:hover .arrow{transform:translateX(4px)}
+
+/* ==================== RESPONSIVE ==================== */
+@media(max-width:600px){
+  .screen{padding:1.5rem 1.2rem}
+  .intro-title{font-size:clamp(1.8rem,7vw,2.8rem)}
+  .intro-sub{font-size:.95rem}
+  .cta-btn{padding:.9rem 2rem;font-size:.95rem}
+  .q-text{font-size:clamp(1.05rem,3.5vw,1.4rem)}
+  .opt-card{padding:.85rem 1rem;gap:.7rem}
+  .opt-label{font-size:.88rem}
+  .opt-icon{font-size:1.1rem}
+  .opt-radio{width:20px;height:20px}
+  .emoji-scale{gap:.35rem}
+  .emoji-btn{width:56px;height:68px}
+  .emoji-btn .em{font-size:1.3rem}
+  .emoji-btn .em-label{font-size:.5rem}
+  .gift-box-v2{width:150px;height:150px}
+  .gift-pre-text{font-size:.95rem}
+  .reveal-big{font-size:clamp(1.6rem,7vw,2.8rem)}
+  .reveal-desc{font-size:.95rem}
+  .reveal-highlight{font-size:.9rem;padding:1.2rem}
+  .pillar{padding:1rem}
+  .pillar-title{font-size:.88rem}
+  .pillar-desc{font-size:.75rem}
+  .mini-timeline{gap:0}
+  .mt-line{width:16px}
+  .mt-item{padding:.4rem .4rem}
+  .mt-label{font-size:.55rem;max-width:60px}
+  .mt-month{font-size:.6rem}
+  .final-badge{font-size:.85rem;padding:.7rem 1.5rem}
+  .insight-card{padding:2rem 1.5rem;border-radius:20px}
+  .insight-stat{font-size:clamp(1.8rem,6vw,2.5rem)}
+  .insight-desc{font-size:.85rem}
+  .video-container{max-width:280px;border-radius:16px}
+  .play-btn-circle{width:56px;height:56px}
+}
+@media(max-width:380px){
+  .emoji-btn{width:50px;height:62px}
+  .emoji-btn .em{font-size:1.1rem}
+  .pillars{gap:.7rem}
+  .mt-line{width:10px}
+}
+</style>
+</head>
+<body>
+
+<div class="noise"></div>
+<div class="top-progress" id="topProgress"></div>
+<div class="theme-toggle" id="themeToggle" role="button" tabindex="0" aria-label="Toggle theme">☀️</div>
+<canvas id="bgCanvas"></canvas>
+
+<!-- Road lines -->
+<div class="road-line" style="left:10%;height:120px;--dur:6s"></div>
+<div class="road-line" style="left:25%;height:80px;--dur:8s;animation-delay:-2s"></div>
+<div class="road-line" style="left:50%;height:100px;--dur:7s;animation-delay:-4s"></div>
+<div class="road-line" style="left:75%;height:90px;--dur:5.5s;animation-delay:-1s"></div>
+<div class="road-line" style="left:90%;height:110px;--dur:9s;animation-delay:-3s"></div>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="pre-icon" style="width:180px;height:70px">
+    <svg viewBox="0 0 200 70" fill="none" style="width:100%;height:100%">
+      <rect x="5" y="12" width="120" height="40" rx="6" stroke="#00E5BF" stroke-width="2" fill="rgba(0,229,191,.05)">
+        <animate attributeName="opacity" values=".5;1;.5" dur="1.5s" repeatCount="indefinite"/>
+      </rect>
+      <text x="65" y="38" text-anchor="middle" fill="#00E5BF" font-size="14" font-weight="700" font-family="Space Grotesk,sans-serif" letter-spacing="0.5">TransFarma</text>
+      <rect x="125" y="22" width="45" height="30" rx="4" stroke="#6C5CE7" stroke-width="2" fill="rgba(108,92,231,.05)">
+        <animate attributeName="opacity" values=".5;1;.5" dur="1.5s" repeatCount="indefinite" begin=".2s"/>
+      </rect>
+      <rect x="152" y="28" width="14" height="10" rx="2" stroke="#6C5CE7" stroke-width="1.5" fill="none"/>
+      <circle cx="30" cy="55" r="7" stroke="#00E5BF" stroke-width="2" fill="rgba(0,229,191,.1)">
+        <animate attributeName="r" values="7;8;7" dur="1s" repeatCount="indefinite"/>
+      </circle>
+      <circle cx="100" cy="55" r="7" stroke="#00E5BF" stroke-width="2" fill="rgba(0,229,191,.1)">
+        <animate attributeName="r" values="7;8;7" dur="1s" repeatCount="indefinite" begin=".15s"/>
+      </circle>
+      <circle cx="148" cy="55" r="7" stroke="#6C5CE7" stroke-width="2" fill="rgba(108,92,231,.1)">
+        <animate attributeName="r" values="7;8;7" dur="1s" repeatCount="indefinite" begin=".3s"/>
+      </circle>
+    </svg>
+  </div>
+  <div class="pre-bar"><div class="pre-bar-fill" id="preFill"></div></div>
+</div>
+
+<!-- ===== SCREEN 1: INTRO ===== -->
+<div class="screen active" id="screen-intro">
+  <div class="intro-wrap">
+    <svg class="tf-logo" viewBox="0 0 280 80" xmlns="http://www.w3.org/2000/svg">
+      <text x="140" y="32" text-anchor="middle" font-family="'Space Grotesk',sans-serif" font-size="30" font-weight="700" fill="#7AB929">Trans<tspan fill="#7AB929" font-weight="700">F</tspan>arma</text>
+      <path d="M 30 46 C 80 38, 130 38, 160 46 S 230 54, 250 46" stroke="#2E78C2" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <text x="140" y="68" text-anchor="middle" font-family="Inter,sans-serif" font-size="11" font-weight="400" fill="#888" letter-spacing="1">Logística Farmacéutica</text>
+    </svg>
+    <div class="year-badge"><span class="pulse-dot"></span> 2026 &mdash; Algo nuevo viene</div>
+    <h1 class="intro-title">
+      Este año,<br>nos comprometimos<br>a <em>transformarnos</em>
+    </h1>
+    <p class="intro-sub">
+      En <b>TransFarma</b> sabemos que detrás de cada ruta, cada despacho y cada turno
+      hay una persona que merece sentirse bien.<br><br>
+      Queremos escucharte. Cuéntanos cómo te has sentido.
+    </p>
+    <button class="cta-btn" id="startBtn">
+      Comenzar <span class="arrow">→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 2: SURVEY ===== -->
+<div class="screen" id="screen-survey">
+  <div class="survey-wrap">
+    <div class="survey-header">
+      <div class="q-counter" id="qCounter">Pregunta 1 de 5</div>
+      <div class="q-progress-track"><div class="q-progress-fill" id="qFill"></div></div>
+    </div>
+    <div id="questionArea"></div>
+  </div>
+</div>
+
+<!-- ===== INSIGHT POPUP ===== -->
+<div class="insight-overlay" id="insightOverlay">
+  <div class="insight-card">
+    <div class="insight-icon" id="insightIcon"></div>
+    <div class="insight-label" id="insightLabel"></div>
+    <div class="insight-stat" id="insightStat"></div>
+    <div class="insight-desc" id="insightDesc"></div>
+    <div class="insight-source" id="insightSource"></div>
+    <button class="insight-btn" id="insightBtn">Continuar</button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 3: GIFT ===== -->
+<div class="screen" id="screen-gift">
+  <div class="gift-wrap">
+    <div class="truck-scene">
+      <svg class="truck-svg" viewBox="0 0 320 96" fill="none">
+        <!-- Truck body cargo area -->
+        <rect x="8" y="19" width="176" height="61" rx="9" stroke="#00E5BF" stroke-width="3" fill="rgba(0,229,191,.08)"/>
+        <!-- TransFarma text on truck body - BIGGER and PROMINENT -->
+        <text x="96" y="58" text-anchor="middle" fill="#00E5BF" font-size="18" font-weight="800" font-family="Space Grotesk, sans-serif" letter-spacing="1">TransFarma</text>
+        <!-- Cabin/Driver area -->
+        <rect x="184" y="35" width="72" height="45" rx="6" stroke="#6C5CE7" stroke-width="3" fill="rgba(108,92,231,.08)"/>
+        <!-- Cabin window -->
+        <rect x="232" y="45" width="20" height="16" rx="3" stroke="#6C5CE7" stroke-width="2" fill="none"/>
+        <!-- Front bumper -->
+        <line x1="256" y1="50" x2="280" y2="50" stroke="#FF6B6B" stroke-width="2"/>
+        <!-- Wheels -->
+        <circle cx="56" cy="83" r="13" stroke="#00E5BF" stroke-width="2.5" fill="var(--dark)"/>
+        <circle cx="56" cy="83" r="5" fill="#00E5BF" opacity=".6"/>
+        <circle cx="152" cy="83" r="13" stroke="#00E5BF" stroke-width="2.5" fill="var(--dark)"/>
+        <circle cx="152" cy="83" r="5" fill="#00E5BF" opacity=".6"/>
+        <circle cx="224" cy="83" r="13" stroke="#6C5CE7" stroke-width="2.5" fill="var(--dark)"/>
+        <circle cx="224" cy="83" r="5" fill="#6C5CE7" opacity=".6"/>
+      </svg>
+    </div>
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;margin-bottom:.8rem">
+      Gracias por contarnos cómo te sientes
+    </h2>
+    <p class="gift-pre-text">
+      Tus respuestas nos confirman lo que ya sabíamos:<br>
+      <strong>es momento de hacer algo diferente.</strong>
+    </p>
+    <p class="gift-pre-text" style="margin-bottom:1.5rem">
+      Y por eso te tenemos un regalo...
+    </p>
+    <div class="gift-box-v2" id="giftBox">
+      <div class="glow"></div>
+      <div class="gift-body">
+        <div class="ribbon-v"></div>
+        <div class="ribbon-h"></div>
+        <div class="bow">🎀</div>
+      </div>
+    </div>
+    <p class="gift-tap">Toca el <span>regalo</span> para descubrir <span class="gift-tap-arrow">👆</span></p>
+  </div>
+</div>
+
+<!-- ===== SCREEN 4: VIDEO ===== -->
+<div class="screen" id="screen-video">
+  <div class="video-wrap">
+    <h2 style="font-family:'Space Grotesk',sans-serif;font-size:clamp(1.4rem,4vw,2rem);font-weight:700;margin-bottom:.3rem">
+      Mira lo que se viene
+    </h2>
+    <p style="color:var(--text-dim);font-size:.95rem;margin-bottom:1rem">Un adelanto de lo que preparamos para ti</p>
+    <div class="video-container">
+      <video id="mainVideo" playsinline preload="auto" poster="video-poster.jpg">
+        <source src="video-bienestar.mp4" type="video/mp4">
+      </video>
+      <div class="video-play-overlay" id="videoOverlay">
+        <div class="play-overlay-content">
+          <div class="play-btn-circle">
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg>
+          </div>
+          <div class="play-label">Toca para reproducir<br><span>con sonido 🔊</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="video-caption"><b>TransFarma</b> te transforma — 2026</p>
+    <button class="video-next-btn" id="videoNextBtn">
+      Descubre el programa <span class="arrow">→</span>
+    </button>
+  </div>
+</div>
+
+<!-- ===== SCREEN 5: FINAL REVEAL ===== -->
+<div class="screen" id="screen-reveal">
+  <div class="reveal-wrap">
+    <h2 class="reveal-big">
+      Este 2026,<br><b>TransFarma</b><br><em>se transforma</em>
+    </h2>
+    <p class="reveal-desc">
+      Una nueva cultura de bienestar está comenzando.
+      Queremos que sientas que <b>TransFarma</b> te cuida, te valora y se transforma contigo.
+    </p>
+
+    <div class="reveal-highlight">
+      Diseñamos un <strong>programa anual de bienestar</strong> con dos coaches especializados
+      que acompañarán al equipo durante todo el año con sesiones de wellness,
+      pausas activas, protocolos de autocuidado y actividades grupales que
+      fomenten una cultura donde cada persona importa.
+    </div>
+
+    <div class="pillars" id="pillars">
+      <div class="pillar" style="transition-delay:.1s" onclick="openPillar(0)">
+        <div class="pillar-head"><span class="pillar-icon">🧠</span><span class="pillar-title">Sesiones de Wellness</span></div>
+        <div class="pillar-desc">Talleres y sesiones grupales enfocadas en manejo de estrés, bienestar emocional y herramientas prácticas para el día a día.</div>
+        <div class="pillar-tap">Toca para ver más →</div>
+      </div>
+      <div class="pillar" style="transition-delay:.2s" onclick="openPillar(1)">
+        <div class="pillar-head"><span class="pillar-icon">🏋️</span><span class="pillar-title">Pausas Activas</span></div>
+        <div class="pillar-desc">Rutinas de movilidad, elongación y activación muscular diseñadas para choferes, operarios de bodega y personal administrativo.</div>
+        <div class="pillar-tap">Toca para ver más →</div>
+      </div>
+      <div class="pillar" style="transition-delay:.3s" onclick="openPillar(2)">
+        <div class="pillar-head"><span class="pillar-icon">📋</span><span class="pillar-title">Protocolos de Autocuidado</span></div>
+        <div class="pillar-desc">Guías y protocolos prácticos para cuidar tu cuerpo y tu mente en la pega: ergonomía, descanso, alimentación y más.</div>
+        <div class="pillar-tap">Toca para ver más →</div>
+      </div>
+      <div class="pillar" style="transition-delay:.4s" onclick="openPillar(3)">
+        <div class="pillar-head"><span class="pillar-icon">🤝</span><span class="pillar-title">Actividades Grupales</span></div>
+        <div class="pillar-desc">Jornadas de integración, dinámicas de equipo y espacios de escucha que fortalezcan la cultura y el compañerismo.</div>
+        <div class="pillar-tap">Toca para ver más →</div>
+      </div>
+    </div>
+
+    <!-- Pillar detail modal -->
+    <div class="pillar-modal-overlay" id="pillarModal">
+      <div class="pillar-modal">
+        <div class="pm-header">
+          <div class="pm-title-row"><span class="pm-icon" id="pmIcon"></span><span class="pm-title" id="pmTitle"></span></div>
+          <button class="pm-close" onclick="closePillar()">✕</button>
+        </div>
+        <div class="pm-desc" id="pmDesc"></div>
+        <div class="pm-video-placeholder">
+          <div class="pm-video-play"><svg width="22" height="22" viewBox="0 0 24 24" fill="white"><polygon points="5,3 19,12 5,21"/></svg></div>
+          <div class="pm-video-text">Aquí irá un video explicando en detalle qué haremos en este pilar.<br><strong style="color:var(--primary)">Próximamente</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <p style="font-size:.75rem;color:var(--primary);font-weight:600;letter-spacing:.08em;text-transform:uppercase;margin-bottom:1.5rem">
+      Hacia una nueva cultura de bienestar
+    </p>
+
+    <div class="mini-timeline" id="miniTimeline">
+      <div class="mt-item" style="transition-delay:.1s"><div class="mt-dot"></div><div class="mt-month">ABR</div><div class="mt-label">Lanzamiento</div></div>
+      <div class="mt-line"></div>
+      <div class="mt-item" style="transition-delay:.2s"><div class="mt-dot" style="background:var(--accent)"></div><div class="mt-month">MAY-JUN</div><div class="mt-label">Primeras sesiones</div></div>
+      <div class="mt-line"></div>
+      <div class="mt-item" style="transition-delay:.3s"><div class="mt-dot" style="background:var(--accent2)"></div><div class="mt-month">JUL-SEP</div><div class="mt-label">Actividades y desafíos</div></div>
+      <div class="mt-line"></div>
+      <div class="mt-item" style="transition-delay:.4s"><div class="mt-dot" style="background:var(--warn)"></div><div class="mt-month">OCT-DIC</div><div class="mt-label">Cierre y celebración</div></div>
+    </div>
+
+    <div class="final-badge">✨ <b>TransFarma</b> Te Transforma &mdash; 2026</div>
+    <p class="final-msg">
+      <b>TransFarma</b> se transforma. Y queremos que tú seas parte de este cambio.
+    </p>
+    <div class="final-footer">Programa de Bienestar Integral &copy; 2026</div>
+  </div>
+</div>
+
+<script>
+// ======================
+// QUESTIONS — anónima, sin ROI, con tildes
+// ======================
+const questions=[
+  {
+    type:'emoji',
+    text:'¿Cómo te sientes al llegar al trabajo la mayoría de los días?',
+    options:[
+      {emoji:'😫',label:'Agotado',val:1},
+      {emoji:'😕',label:'Regular',val:2},
+      {emoji:'😐',label:'Normal',val:3},
+      {emoji:'🙂',label:'Bien',val:4},
+      {emoji:'😄',label:'Excelente',val:5},
+    ],
+    insight:{
+      icon:'📊',label:'¿Sabías que?',
+      stat:'76%',
+      desc:'de los trabajadores en logística y transporte reportan fatiga crónica. No estás solo en esto, y por eso en <b>TransFarma</b> decidimos actuar.',
+      source:'Organización Internacional del Trabajo, 2025'
+    }
+  },
+  {
+    type:'options',
+    text:'¿Qué es lo que más te afecta físicamente en tu día a día laboral?',
+    options:[
+      {icon:'🪑',label:'Pasar muchas horas sentado (conducción u oficina)',val:'sedentarismo'},
+      {icon:'📦',label:'Esfuerzo físico repetitivo (carga, bodega)',val:'esfuerzo'},
+      {icon:'🍔',label:'No logro comer bien en horario de trabajo',val:'alimentacion'},
+      {icon:'😴',label:'Turnos que me alteran el sueño',val:'sueno'},
+    ]
+  },
+  {
+    type:'options',
+    text:'Cuando el estrés te supera, ¿qué sueles hacer?',
+    options:[
+      {icon:'🚶',label:'Intento despejarme, pero no siempre funciona',val:'solo'},
+      {icon:'🗣️',label:'Hablo con alguien de confianza',val:'habla'},
+      {icon:'📱',label:'Me distraigo con el celular o pantallas',val:'pantalla'},
+      {icon:'🤷',label:'Nada, lo aguanto y sigo',val:'aguanta'},
+    ],
+    insight:{
+      icon:'🧠',label:'¿Sabías que?',
+      stat:'1 de cada 3',
+      desc:'trabajadores en Chile declara haber experimentado síntomas de burnout el último año. En <b>TransFarma</b> queremos que eso cambie para ti y tu equipo.',
+      source:'Encuesta Nacional de Salud Mental Laboral, Chile 2025'
+    }
+  },
+  {
+    type:'emoji',
+    text:'¿Cuánto sientes que tu lugar de trabajo se preocupa por cómo te sientes?',
+    options:[
+      {emoji:'1️⃣',label:'Nada',val:1},
+      {emoji:'2️⃣',label:'Poco',val:2},
+      {emoji:'3️⃣',label:'Algo',val:3},
+      {emoji:'4️⃣',label:'Bastante',val:4},
+      {emoji:'5️⃣',label:'Mucho',val:5},
+    ],
+    insight:{
+      icon:'💡',label:'Dato importante',
+      stat:'87%',
+      desc:'de las personas dice que se desempeña mejor cuando siente que su empresa se preocupa por su bienestar. En <b>TransFarma</b> estamos construyendo exactamente eso.',
+      source:'Gallup Workplace Wellbeing Report, 2025'
+    }
+  },
+  {
+    type:'options',
+    text:'Si pudieras pedir UN cambio para sentirte mejor en la pega, ¿cuál sería?',
+    options:[
+      {icon:'🧘',label:'Espacios para despejar la mente y bajar el estrés',val:'mental'},
+      {icon:'💪',label:'Actividades para mover el cuerpo y prevenir dolores',val:'fisico'},
+      {icon:'🤝',label:'Más actividades en equipo y mejor ambiente',val:'cultura'},
+      {icon:'📋',label:'Que alguien me enseñe a cuidarme mejor',val:'protocolos'},
+    ]
+  }
+];
+
+// ======================
+// STATE
+// ======================
+let currentQ=0;
+let answers=[];
+
+// ======================
+// PRELOADER
+// ======================
+let prog=0;
+const preFill=document.getElementById('preFill');
+function runPre(){
+  prog+=Math.random()*18+5;
+  if(prog>100)prog=100;
+  preFill.style.width=prog+'%';
+  if(prog<100){setTimeout(runPre,180+Math.random()*220)}
+  else{setTimeout(()=>{
+    const p=document.getElementById('preloader');
+    p.classList.add('out');
+    setTimeout(()=>p.style.display='none',1000);
+  },400)}
+}
+window.addEventListener('load',()=>setTimeout(runPre,200));
+
+// ======================
+// BG CANVAS
+// ======================
+const cv=document.getElementById('bgCanvas');
+const cx=cv.getContext('2d');
+function resizeCv(){cv.width=innerWidth;cv.height=innerHeight}
+resizeCv();
+addEventListener('resize',resizeCv);
+
+let dots=[];
+for(let i=0;i<50;i++){
+  dots.push({
+    x:Math.random()*innerWidth,y:Math.random()*innerHeight,
+    vx:(Math.random()-.5)*.2,vy:(Math.random()-.5)*.2,
+    r:Math.random()*1.5+.5,
+    c:['#00E5BF','#6C5CE7','#FD79A8'][~~(Math.random()*3)]
+  });
+}
+function drawBg(){
+  cx.clearRect(0,0,cv.width,cv.height);
+  dots.forEach(d=>{
+    d.x+=d.vx;d.y+=d.vy;
+    if(d.x<0||d.x>cv.width)d.vx*=-1;
+    if(d.y<0||d.y>cv.height)d.vy*=-1;
+    cx.beginPath();cx.arc(d.x,d.y,d.r,0,Math.PI*2);
+    cx.fillStyle=d.c;cx.globalAlpha=.15;cx.fill();cx.globalAlpha=1;
+  });
+  for(let i=0;i<dots.length;i++){
+    for(let j=i+1;j<dots.length;j++){
+      const dx=dots[i].x-dots[j].x,dy=dots[i].y-dots[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<140){
+        cx.beginPath();cx.moveTo(dots[i].x,dots[i].y);cx.lineTo(dots[j].x,dots[j].y);
+        cx.strokeStyle=`rgba(0,229,191,${.04*(1-dist/140)})`;cx.lineWidth=.5;cx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawBg);
+}
+drawBg();
+
+// ======================
+// NAVIGATION — with scroll-to-top fix
+// ======================
+function goToScreen(id){
+  const active=document.querySelector('.screen.active');
+  if(active){
+    active.classList.remove('active');
+    active.classList.add('exit-up');
+    setTimeout(()=>{
+      active.classList.remove('exit-up');
+      active.classList.add('hidden-done');
+    },800);
+  }
+  setTimeout(()=>{
+    const next=document.getElementById(id);
+    next.classList.remove('hidden-done');
+    next.classList.add('active');
+    // Scroll to top so user always sees the new screen
+    window.scrollTo({top:0,behavior:'smooth'});
+  },500);
+}
+
+// ======================
+// TOP PROGRESS
+// ======================
+const totalSteps = questions.length + 4; // intro + questions + gift + video + reveal
+let currentStep = 1;
+function updateTopProgress(){
+  document.getElementById('topProgress').style.width=(currentStep/totalSteps*100)+'%';
+}
+updateTopProgress();
+
+// ======================
+// START BUTTON
+// ======================
+document.getElementById('startBtn').addEventListener('click',function(){
+  currentStep=2;
+  updateTopProgress();
+  goToScreen('screen-survey');
+  setTimeout(renderQuestion,600);
+});
+
+// ======================
+// SURVEY ENGINE
+// ======================
+function renderQuestion(){
+  const q=questions[currentQ];
+  const area=document.getElementById('questionArea');
+  document.getElementById('qCounter').textContent=`Pregunta ${currentQ+1} de ${questions.length}`;
+  document.getElementById('qFill').style.width=((currentQ+1)/questions.length*100)+'%';
+
+  let html=`<div class="q-text">${q.text}</div>`;
+
+  if(q.type==='options'){
+    html+='<div class="options-grid">';
+    q.options.forEach((o,i)=>{
+      html+=`<div class="opt-card" data-idx="${i}" onclick="selectOption(this,${i})">
+        <div class="opt-radio"></div>
+        <div class="opt-icon">${o.icon}</div>
+        <div class="opt-label">${o.label}</div>
+      </div>`;
+    });
+    html+='</div>';
+  } else if(q.type==='emoji'){
+    html+='<div class="emoji-scale">';
+    q.options.forEach((o,i)=>{
+      html+=`<div class="emoji-btn" data-idx="${i}" onclick="selectEmoji(this,${i})">
+        <span class="em">${o.emoji}</span>
+        <span class="em-label">${o.label}</span>
+      </div>`;
+    });
+    html+='</div>';
+  }
+
+  // Animate in
+  area.style.opacity='0';area.style.transform='translateY(20px)';
+  setTimeout(()=>{
+    area.innerHTML=html;
+    requestAnimationFrame(()=>{
+      area.style.transition='opacity .5s,transform .5s';
+      area.style.opacity='1';
+      area.style.transform='none';
+    });
+  },300);
+}
+
+function selectOption(el,idx){
+  document.querySelectorAll('.opt-card').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  answers.push(questions[currentQ].options[idx].val);
+  setTimeout(()=>advanceQuestion(),700);
+}
+
+function selectEmoji(el,idx){
+  document.querySelectorAll('.emoji-btn').forEach(c=>c.classList.remove('selected'));
+  el.classList.add('selected');
+  answers.push(questions[currentQ].options[idx].val);
+  setTimeout(()=>advanceQuestion(),700);
+}
+
+function advanceQuestion(){
+  const q=questions[currentQ];
+
+  if(q.insight){
+    showInsight(q.insight,()=>{
+      currentQ++;
+      currentStep=currentQ+2;
+      updateTopProgress();
+      if(currentQ>=questions.length){
+        goToGift();
+      } else {
+        renderQuestion();
+      }
+    });
+  } else {
+    currentQ++;
+    currentStep=currentQ+2;
+    updateTopProgress();
+    if(currentQ>=questions.length){
+      goToGift();
+    } else {
+      renderQuestion();
+    }
+  }
+}
+
+// ======================
+// INSIGHT POPUP
+// ======================
+function showInsight(data,cb){
+  const ov=document.getElementById('insightOverlay');
+  document.getElementById('insightIcon').textContent=data.icon;
+  document.getElementById('insightLabel').textContent=data.label;
+  document.getElementById('insightStat').textContent=data.stat;
+  document.getElementById('insightDesc').innerHTML=data.desc;
+  document.getElementById('insightSource').textContent=data.source;
+  ov.classList.add('show');
+
+  const btn=document.getElementById('insightBtn');
+  btn.onclick=()=>{
+    ov.classList.remove('show');
+    setTimeout(cb,400);
+  };
+}
+
+// ======================
+// SAVE SURVEY DATA TO LOCALSTORAGE
+// ======================
+function saveSurveyData(){
+  try{
+    const existing=JSON.parse(localStorage.getItem('transfarma_survey')||'[]');
+    existing.push({
+      ts:new Date().toISOString(),
+      answers:answers,
+      questions:questions.map(q=>q.text)
+    });
+    localStorage.setItem('transfarma_survey',JSON.stringify(existing));
+  }catch(e){console.log('Could not save survey data');}
+}
+
+// ======================
+// GO TO GIFT
+// ======================
+function goToGift(){
+  saveSurveyData();
+  currentStep = totalSteps - 1;
+  updateTopProgress();
+  goToScreen('screen-gift');
+}
+
+// ======================
+// GIFT CLICK -> VIDEO
+// ======================
+document.getElementById('giftBox').addEventListener('click',function(){
+  fireConfetti();
+  const body=this.querySelector('.gift-body');
+  body.style.transform='scale(1.2) rotateY(180deg)';
+  body.style.opacity='0';
+  this.querySelector('.glow').style.transform='scale(2)';
+  this.querySelector('.glow').style.opacity='0';
+
+  setTimeout(()=>{
+    currentStep = totalSteps - 1;
+    updateTopProgress();
+    goToScreen('screen-video');
+  },900);
+});
+
+// ======================
+// VIDEO PLAYER — always with sound
+// ======================
+const mainVideo = document.getElementById('mainVideo');
+const videoOverlay = document.getElementById('videoOverlay');
+
+// User taps overlay -> play WITH sound (user gesture = browser allows audio)
+videoOverlay.addEventListener('click',function(){
+  mainVideo.muted = false;
+  mainVideo.currentTime = 0;
+  mainVideo.play();
+  videoOverlay.classList.add('hidden');
+});
+
+// Tap video itself to pause/resume
+mainVideo.addEventListener('click',function(){
+  if(mainVideo.paused){
+    mainVideo.play();
+    videoOverlay.classList.add('hidden');
+  } else {
+    mainVideo.pause();
+    videoOverlay.classList.remove('hidden');
+  }
+});
+
+// Video ends — show overlay again
+mainVideo.addEventListener('ended',function(){
+  videoOverlay.classList.remove('hidden');
+});
+
+// ======================
+// VIDEO -> REVEAL
+// ======================
+document.getElementById('videoNextBtn').addEventListener('click',function(){
+  mainVideo.pause();
+  currentStep = totalSteps;
+  updateTopProgress();
+  goToScreen('screen-reveal');
+  setTimeout(()=>{
+    document.querySelectorAll('.pillar').forEach(p=>p.classList.add('vis'));
+    document.querySelectorAll('.mt-item').forEach(m=>m.classList.add('vis'));
+  },800);
+});
+
+// ======================
+// CONFETTI SPECTACULAR
+// ======================
+function fireConfetti(){
+  const colors=['#00E5BF','#6C5CE7','#FD79A8','#FDCB6E','#FF6348','#00D2D3','#fff','#A29BFE'];
+
+  // FLASH
+  const flash=document.createElement('div');
+  flash.className='confetti-flash';
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(),700);
+
+  // WAVE 1: Burst from gift center (instant)
+  const cx=window.innerWidth/2, cy=window.innerHeight/2;
+  for(let i=0;i<50;i++){
+    const angle=Math.random()*Math.PI*2;
+    const dist=Math.random()*400+100;
+    const tx=Math.cos(angle)*dist;
+    const ty=Math.sin(angle)*dist - 100;
+    spawnConfetti({
+      type:'burst',x:cx,y:cy,
+      w:Math.random()*10+4, h:Math.random()*10+4,
+      color:colors[~~(Math.random()*colors.length)],
+      tx:tx+'px', ty:ty+'px',
+      rot:(Math.random()*1080-540)+'deg',
+      t:(Math.random()*1.5+1)+'s',
+      shape:Math.random()
+    });
+  }
+
+  // WAVE 2: Sparkles (delayed 200ms)
+  setTimeout(()=>{
+    for(let i=0;i<25;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=Math.random()*300+50;
+      const color=colors[~~(Math.random()*colors.length)];
+      spawnConfetti({
+        type:'sparkle',
+        x:cx + (Math.random()*100-50),
+        y:cy + (Math.random()*100-50),
+        w:Math.random()*6+3, h:Math.random()*6+3,
+        color:color,
+        glow:color,
+        tx:(Math.cos(angle)*dist)+'px',
+        ty:(Math.sin(angle)*dist)+'px',
+        rot:'0deg',
+        t:(Math.random()*1.2+.8)+'s',
+        shape:1 // always circles
+      });
+    }
+  },200);
+
+  // WAVE 3: Rain from top (delayed 500ms)
+  setTimeout(()=>{
+    for(let i=0;i<40;i++){
+      const delay=Math.random()*600;
+      setTimeout(()=>{
+        spawnConfetti({
+          type:'rain',
+          x:Math.random()*window.innerWidth,
+          y:-20,
+          w:Math.random()*8+4, h:Math.random()*20+8,
+          color:colors[~~(Math.random()*colors.length)],
+          tx:(Math.random()*100-50)+'px',
+          rot:(Math.random()*720)+'deg',
+          t:(Math.random()*2+2)+'s',
+          shape:Math.random()
+        });
+      },delay);
+    }
+  },500);
+
+  // WAVE 4: Streamers (delayed 300ms)
+  setTimeout(()=>{
+    for(let i=0;i<15;i++){
+      const angle=Math.random()*Math.PI*2;
+      const dist=Math.random()*250+100;
+      spawnConfetti({
+        type:'streamer',
+        x:cx + (Math.random()*60-30),
+        y:cy + (Math.random()*60-30),
+        w:3, h:Math.random()*30+15,
+        color:colors[~~(Math.random()*colors.length)],
+        tx:(Math.cos(angle)*dist)+'px',
+        rot:(Math.random()*1440-720)+'deg',
+        t:(Math.random()*2+1.5)+'s',
+        shape:2
+      });
+    }
+  },300);
+}
+
+// ======================
+// PILLAR MODALS
+// ======================
+const pillarData=[
+  {
+    icon:'🧠',title:'Sesiones de Wellness',
+    desc:'Durante el año tendremos sesiones grupales facilitadas por coaches especializados, enfocadas en el manejo del estrés, la regulación emocional y el desarrollo de herramientas prácticas que puedas usar en tu día a día. No es teoría: son espacios seguros donde compartir, aprender y practicar juntos. Cada sesión está diseñada para que salgas con algo concreto que puedas aplicar desde el primer minuto.'
+  },
+  {
+    icon:'🏋️',title:'Pausas Activas',
+    desc:'Rutinas cortas (10-15 minutos) de movilidad, elongación y activación muscular diseñadas específicamente para tu rol. Si manejas, tendrás ejercicios para la espalda baja, cuello y circulación. Si trabajas en bodega, nos enfocamos en hombros, rodillas y core. Si estás en oficina, combatimos el sedentarismo con activaciones que puedes hacer al lado de tu escritorio. Guiadas por coaches, en horario laboral.'
+  },
+  {
+    icon:'📋',title:'Protocolos de Autocuidado',
+    desc:'Guías prácticas creadas por los coaches para que sepas exactamente cómo cuidarte antes, durante y después de tu jornada. Incluyen: rutinas de preparación física antes de la ruta, técnicas de respiración para momentos de estrés, pautas de ergonomía en el camión o la bodega, y recomendaciones de alimentación realistas para turnos rotativos. Todo en formato simple, visual y fácil de seguir.'
+  },
+  {
+    icon:'🤝',title:'Actividades Grupales',
+    desc:'Jornadas de integración, dinámicas de equipo y espacios de escucha activa donde el foco es conocernos más, fortalecer lazos y construir una cultura donde cada persona importa. Incluye actividades outdoor, desafíos por equipos, círculos de conversación y reconocimiento entre compañeros. La idea es que la pega no sea solo pega — que sea también un lugar donde quieras estar.'
+  }
+];
+
+function openPillar(idx){
+  const d=pillarData[idx];
+  document.getElementById('pmIcon').textContent=d.icon;
+  document.getElementById('pmTitle').textContent=d.title;
+  document.getElementById('pmDesc').textContent=d.desc;
+  document.getElementById('pillarModal').classList.add('show');
+}
+function closePillar(){
+  document.getElementById('pillarModal').classList.remove('show');
+}
+document.getElementById('pillarModal').addEventListener('click',function(e){
+  if(e.target===this) closePillar();
+});
+
+function spawnConfetti(opts){
+  const c=document.createElement('div');
+  c.className='confetti '+opts.type;
+  c.style.width=opts.w+'px';
+  c.style.height=opts.h+'px';
+  c.style.background=opts.color;
+  c.style.left=opts.x+'px';
+  c.style.top=opts.y+'px';
+  c.style.setProperty('--tx',opts.tx||'0px');
+  c.style.setProperty('--ty',opts.ty||'100vh');
+  c.style.setProperty('--rot',opts.rot||'360deg');
+  c.style.setProperty('--t',opts.t||'2s');
+  if(opts.glow) c.style.setProperty('--glow',opts.glow);
+  if(opts.shape<.3) c.style.borderRadius='50%';
+  else if(opts.shape<.6) c.style.borderRadius='2px';
+  else if(opts.shape>=2) c.style.borderRadius='2px';
+  else c.style.borderRadius='0';
+  document.body.appendChild(c);
+  setTimeout(()=>c.remove(),5000);
+}
+
+// ======================
+// THEME TOGGLE
+// ======================
+function initThemeToggle(){
+  const themeToggle=document.getElementById('themeToggle');
+  const html=document.documentElement;
+  const savedTheme=localStorage.getItem('transfarma_theme')||'dark';
+
+  // Set initial theme
+  if(savedTheme==='light'){
+    html.setAttribute('data-theme','light');
+    themeToggle.textContent='🌙';
+  }else{
+    html.removeAttribute('data-theme');
+    themeToggle.textContent='☀️';
+  }
+
+  // Toggle theme on click
+  themeToggle.addEventListener('click',()=>{
+    const currentTheme=html.getAttribute('data-theme');
+    const newTheme=currentTheme==='light'?'dark':'light';
+
+    if(newTheme==='light'){
+      html.setAttribute('data-theme','light');
+      themeToggle.textContent='🌙';
+    }else{
+      html.removeAttribute('data-theme');
+      themeToggle.textContent='☀️';
+    }
+
+    localStorage.setItem('transfarma_theme',newTheme);
+  });
+
+  // Also allow keyboard toggle
+  themeToggle.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'||e.key===' '){
+      e.preventDefault();
+      themeToggle.click();
+    }
+  });
+}
+
+// Initialize theme toggle when DOM is ready
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',initThemeToggle);
+}else{
+  initThemeToggle();
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tu Coach Personal - Transfarma</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            background: #080B16;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+        }
+
+        /* ===== LIGHT MODE ===== */
+        [data-theme="light"] body,
+        [data-theme="light"] #welcomeScreen {
+            background: #F5F7FA;
+            color: #1A202C;
+        }
+
+        [data-theme="light"] .coach-card {
+            background: rgba(0,0,0,.03);
+            border-color: rgba(0,0,0,.1);
+        }
+
+        [data-theme="light"] .coach-card p {
+            color: #4A5568;
+        }
+
+        [data-theme="light"] #chatScreen {
+            background: #F5F7FA;
+        }
+
+        [data-theme="light"] .chat-header {
+            background: #FFFFFF;
+            border-color: #E2E8F0;
+        }
+
+        [data-theme="light"] .message.coach .message-bubble {
+            background: #FFFFFF;
+            color: #1A202C;
+            border-color: #E2E8F0;
+        }
+
+        [data-theme="light"] .message-input {
+            background: #FFFFFF;
+            color: #1A202C;
+            border-color: #E2E8F0;
+        }
+
+        [data-theme="light"] .input-area {
+            background: #FFFFFF;
+            border-color: #E2E8F0;
+        }
+
+        /* ===== WELCOME SCREEN ===== */
+        #welcomeScreen {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #080B16 0%, #1a1e2e 100%);
+        }
+
+        .welcome-header {
+            text-align: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+        }
+
+        .welcome-header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(28px, 8vw, 42px);
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #00E5BF 0%, #6C5CE7 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .welcome-header p {
+            font-size: clamp(14px, 4vw, 18px);
+            color: #b0b8d4;
+            font-weight: 500;
+        }
+
+        .transfarma-logo {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .transfarma-logo svg {
+            max-width: 280px;
+            height: auto;
+        }
+
+        .coaches-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        @media (min-width: 768px) {
+            .coaches-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        .coach-card {
+            background: rgba(108, 92, 231, 0.08);
+            border: 2px solid rgba(108, 92, 231, 0.2);
+            border-radius: 16px;
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .coach-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(0, 229, 191, 0.1) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .coach-card:hover {
+            transform: translateY(-8px);
+            border-color: rgba(0, 229, 191, 0.4);
+            background: rgba(0, 229, 191, 0.08);
+        }
+
+        .coach-card:hover::before {
+            opacity: 1;
+        }
+
+        .coach-card.bienestar {
+            border-color: rgba(0, 229, 191, 0.3);
+            background: rgba(0, 229, 191, 0.08);
+        }
+
+        .coach-card.bienestar:hover {
+            border-color: #00E5BF;
+            background: rgba(0, 229, 191, 0.15);
+        }
+
+        .coach-card.nutricion {
+            border-color: rgba(108, 92, 231, 0.3);
+            background: rgba(108, 92, 231, 0.08);
+        }
+
+        .coach-card.nutricion:hover {
+            border-color: #6C5CE7;
+            background: rgba(108, 92, 231, 0.15);
+        }
+
+        .coach-card.ingles {
+            border-color: rgba(253, 121, 168, 0.3);
+            background: rgba(253, 121, 168, 0.08);
+        }
+
+        .coach-card.ingles:hover {
+            border-color: #FD79A8;
+            background: rgba(253, 121, 168, 0.15);
+        }
+
+        .coach-emoji {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .coach-card h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .coach-card.bienestar h3 {
+            color: #00E5BF;
+        }
+
+        .coach-card.nutricion h3 {
+            color: #6C5CE7;
+        }
+
+        .coach-card.ingles h3 {
+            color: #FD79A8;
+        }
+
+        .coach-card p {
+            font-size: 14px;
+            color: #b0b8d4;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+            flex-grow: 1;
+        }
+
+        /* ===== CHAT SCREEN ===== */
+        #chatScreen {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            background: linear-gradient(135deg, #080B16 0%, #1a1e2e 100%);
+        }
+
+        .chat-header {
+            background: rgba(108, 92, 231, 0.1);
+            border-bottom: 1px solid rgba(0, 229, 191, 0.2);
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-height: 70px;
+        }
+
+        .back-button {
+            background: transparent;
+            border: none;
+            color: #00E5BF;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            transition: background 0.2s ease;
+        }
+
+        .back-button:active {
+            background: rgba(0, 229, 191, 0.2);
+        }
+
+        .coach-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .coach-avatar {
+            font-size: 32px;
+            width: 44px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 229, 191, 0.1);
+            border-radius: 12px;
+        }
+
+        .coach-header-info h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .coach-header-info p {
+            font-size: 12px;
+            color: #b0b8d4;
+        }
+
+        .clear-button {
+            background: rgba(253, 121, 168, 0.1);
+            border: 1px solid rgba(253, 121, 168, 0.3);
+            color: #FD79A8;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+        }
+
+        .clear-button:active {
+            background: rgba(253, 121, 168, 0.2);
+        }
+
+        .messages-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .messages-container::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .messages-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .messages-container::-webkit-scrollbar-thumb {
+            background: rgba(0, 229, 191, 0.3);
+            border-radius: 3px;
+        }
+
+        .message {
+            display: flex;
+            animation: slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .message.user {
+            justify-content: flex-end;
+        }
+
+        .message.coach {
+            justify-content: flex-start;
+        }
+
+        .message-bubble {
+            max-width: 85%;
+            padding: 12px 16px;
+            border-radius: 12px;
+            line-height: 1.5;
+            font-size: 14px;
+            word-wrap: break-word;
+        }
+
+        .message.user .message-bubble {
+            background: linear-gradient(135deg, #00E5BF 0%, #6C5CE7 100%);
+            color: #080B16;
+            border-radius: 16px 16px 4px 16px;
+            font-weight: 500;
+        }
+
+        .message.coach .message-bubble {
+            background: rgba(108, 92, 231, 0.2);
+            color: #e0e6f2;
+            border: 1px solid rgba(0, 229, 191, 0.2);
+            border-radius: 16px 16px 16px 4px;
+        }
+
+        .typing-indicator {
+            display: flex;
+            gap: 4px;
+            padding: 12px 16px;
+            background: rgba(108, 92, 231, 0.2);
+            border: 1px solid rgba(0, 229, 191, 0.2);
+            border-radius: 16px;
+            width: fit-content;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00E5BF;
+            animation: typing 1.4s infinite;
+        }
+
+        .typing-dot:nth-child(2) {
+            animation-delay: 0.2s;
+        }
+
+        .typing-dot:nth-child(3) {
+            animation-delay: 0.4s;
+        }
+
+        @keyframes typing {
+            0%, 60%, 100% {
+                opacity: 0.3;
+                transform: translateY(0);
+            }
+            30% {
+                opacity: 1;
+                transform: translateY(-10px);
+            }
+        }
+
+        /* ===== INPUT AREA ===== */
+        .input-area {
+            background: rgba(108, 92, 231, 0.08);
+            border-top: 1px solid rgba(0, 229, 191, 0.2);
+            padding: 16px 20px;
+            display: flex;
+            gap: 12px;
+            align-items: flex-end;
+        }
+
+        .input-wrapper {
+            flex: 1;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+        }
+
+        .message-input {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(0, 229, 191, 0.2);
+            color: #ffffff;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            resize: none;
+            max-height: 100px;
+            transition: all 0.2s ease;
+        }
+
+        .message-input::placeholder {
+            color: #7a8199;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #00E5BF;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #00E5BF 0%, #6C5CE7 100%);
+            border: none;
+            color: #080B16;
+            padding: 12px 20px;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            min-width: 50px;
+            height: 44px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-button:active {
+            transform: scale(0.95);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ===== ERROR STATE ===== */
+        #configError {
+            display: none;
+            flex-direction: column;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        .error-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .error-icon h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 28px;
+            margin-bottom: 16px;
+            color: #FD79A8;
+        }
+
+        .error-icon p {
+            color: #b0b8d4;
+            font-size: 16px;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .error-button {
+            background: linear-gradient(135deg, #00E5BF 0%, #6C5CE7 100%);
+            border: none;
+            color: #080B16;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-height: 600px) {
+            .welcome-header {
+                margin-bottom: 20px;
+                margin-top: 10px;
+            }
+
+            .coaches-grid {
+                gap: 12px;
+            }
+
+            .coach-card {
+                padding: 16px;
+            }
+
+            .coach-emoji {
+                font-size: 36px;
+                margin-bottom: 12px;
+            }
+
+            .coach-card h3 {
+                font-size: 16px;
+            }
+
+            .coach-card p {
+                font-size: 12px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .message-bubble {
+                max-width: 90%;
+            }
+
+            .chat-header {
+                flex-wrap: wrap;
+            }
+
+            .clear-button {
+                padding: 6px 10px;
+                font-size: 11px;
+            }
+        }
+
+        /* ===== THEME TOGGLE ===== */
+        .theme-toggle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: rgba(108, 92, 231, 0.2);
+            border: 1px solid rgba(0, 229, 191, 0.3);
+            color: #00E5BF;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(108, 92, 231, 0.3);
+            border-color: rgba(0, 229, 191, 0.5);
+            transform: scale(1.1);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: rgba(0, 0, 0, 0.08);
+            border-color: rgba(0, 0, 0, 0.15);
+            color: #2B6CB0;
+        }
+
+        [data-theme="light"] .theme-toggle:hover {
+            background: rgba(0, 0, 0, 0.12);
+            border-color: rgba(0, 0, 0, 0.25);
+        }
+    </style>
+</head>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle" id="themeToggle" title="Alternar tema">🌙</button>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen">
+        <div class="transfarma-logo">
+            <svg viewBox="0 0 300 140" xmlns="http://www.w3.org/2000/svg">
+                <!-- TransFarma text in green and blue -->
+                <text x="150" y="60" font-family="Space Grotesk, sans-serif" font-size="48" font-weight="700" text-anchor="middle">
+                    <tspan fill="#7AB929">Trans</tspan><tspan fill="#2B6CB0">F</tspan><tspan fill="#7AB929">arma</tspan>
+                </text>
+                <!-- Blue wave underneath -->
+                <path d="M 50 85 Q 75 75 100 85 T 150 85 T 200 85 T 250 85" stroke="#2B6CB0" stroke-width="3" fill="none" stroke-linecap="round"/>
+                <!-- Tagline -->
+                <text x="150" y="120" font-family="Inter, sans-serif" font-size="12" fill="#999999" text-anchor="middle" font-weight="500">Logística Farmacéutica</text>
+            </svg>
+        </div>
+        <div class="welcome-header">
+            <h1>Tu Coach Personal</h1>
+            <p>Elige el coach que necesitas hoy</p>
+        </div>
+
+        <div class="coaches-grid">
+            <!-- Coach 1: Bienestar -->
+            <div class="coach-card bienestar" data-coach="bienestar">
+                <div class="coach-emoji">🧠</div>
+                <h3>Coach de Bienestar</h3>
+                <p>Conversemos sobre cómo te sientes, manejo del estrés, y herramientas para tu día a día.</p>
+            </div>
+
+            <!-- Coach 2: Nutrición -->
+            <div class="coach-card nutricion" data-coach="nutricion">
+                <div class="coach-emoji">🥗</div>
+                <h3>Coach de Nutrición</h3>
+                <p>Tips e ideas para alimentarte mejor, incluso con turnos rotativos y poco tiempo.</p>
+            </div>
+
+            <!-- Coach 3: Inglés -->
+            <div class="coach-card ingles" data-coach="ingles">
+                <div class="coach-emoji">🌎</div>
+                <h3>Coach de Inglés</h3>
+                <p>Aprende inglés de forma práctica. Pronunciación, vocabulario y frases útiles.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Config Error Screen -->
+    <div id="configError">
+        <div class="error-icon">
+            <h2>⚙️</h2>
+            <p>Para usar el coach necesitas que tu administrador configure la conexión.</p>
+            <p style="font-size: 14px; margin-top: 12px;">Pídele que entre a <code style="background: rgba(0,229,191,0.1); padding: 4px 8px; border-radius: 4px; color: #00E5BF;">/admin</code></p>
+        </div>
+    </div>
+
+    <!-- Chat Screen -->
+    <div id="chatScreen">
+        <div class="chat-header">
+            <button class="back-button" id="backButton">← Atrás</button>
+            <div class="coach-info">
+                <div class="coach-avatar" id="coachAvatar">🧠</div>
+                <div class="coach-header-info">
+                    <h2 id="coachName">Coach de Bienestar</h2>
+                    <p id="coachStatus">En línea</p>
+                </div>
+            </div>
+            <button class="clear-button" id="clearButton">Limpiar</button>
+        </div>
+
+        <div class="messages-container" id="messagesContainer">
+            <!-- Messages will be inserted here -->
+        </div>
+
+        <div class="input-area">
+            <div class="input-wrapper">
+                <textarea
+                    class="message-input"
+                    id="messageInput"
+                    placeholder="Escribe tu mensaje..."
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton">Enviar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE MANAGEMENT =====
+        const state = {
+            currentCoach: null,
+            coachInfo: {
+                bienestar: {
+                    name: 'Coach de Bienestar',
+                    emoji: '🧠',
+                    storageKey: 'transfarma_coach_bienestar',
+                    systemPrompt: `Eres un coach de bienestar laboral cálido, cercano y profesional. Trabajas con colaboradores de TransFarma, una empresa de logística farmacéutica en Chile. Muchos son choferes de camión, operarios de bodega o personal administrativo. Habla en español chileno amigable (sin ser demasiado informal). Usa lenguaje simple y directo. Ofrece herramientas prácticas: técnicas de respiración, manejo del estrés, tips de autocuidado. Siempre cierra con algo positivo y accionable. Nunca des diagnósticos médicos. Si alguien menciona crisis o urgencia, sugiere buscar ayuda profesional.`
+                },
+                nutricion: {
+                    name: 'Coach de Nutrición',
+                    emoji: '🥗',
+                    storageKey: 'transfarma_coach_nutricion',
+                    systemPrompt: `Eres un coach de nutrición práctico y cercano. Trabajas con personas que tienen turnos rotativos, pasan mucho tiempo en ruta o en bodega, y no siempre tienen acceso a comida saludable. Habla en español chileno amigable. Da tips realistas: qué comprar en el camino, cómo preparar comida rápida y nutritiva, hidratación, snacks saludables. No des planes estrictos - da opciones flexibles. Nunca reemplaces la consulta con un nutricionista profesional.`
+                },
+                ingles: {
+                    name: 'Coach de Inglés',
+                    emoji: '🌎',
+                    storageKey: 'transfarma_coach_ingles',
+                    systemPrompt: `Eres un profesor de inglés amigable y paciente. Trabajas con personas en Chile que quieren aprender inglés básico-intermedio. Mezcla español e inglés en tus respuestas. Enseña con ejemplos prácticos, pronunciación (escrita fonéticamente en español), frases útiles para el trabajo y la vida diaria. Haz ejercicios interactivos: completa la frase, traduce, repite. Sé motivador y celebra cada avance.`
+                }
+            },
+            apiConfig: null,
+            isLoading: false
+        };
+
+        // ===== API CONFIGURATION =====
+        function loadApiConfig() {
+            const config = localStorage.getItem('transfarma_config');
+            if (!config) {
+                return null;
+            }
+            try {
+                return JSON.parse(config);
+            } catch (e) {
+                console.error('Error parsing API config:', e);
+                return null;
+            }
+        }
+
+        function showConfigError() {
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('chatScreen').style.display = 'none';
+            document.getElementById('configError').style.display = 'flex';
+        }
+
+        function checkAndLoadConfig() {
+            state.apiConfig = loadApiConfig();
+            if (!state.apiConfig) {
+                showConfigError();
+                return false;
+            }
+            return true;
+        }
+
+        // ===== COACH SELECTION =====
+        document.querySelectorAll('.coach-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const coachType = card.getAttribute('data-coach');
+                selectCoach(coachType);
+            });
+        });
+
+        function selectCoach(coachType) {
+            if (!checkAndLoadConfig()) return;
+
+            state.currentCoach = coachType;
+            const coachData = state.coachInfo[coachType];
+
+            // Update chat header
+            document.getElementById('coachAvatar').textContent = coachData.emoji;
+            document.getElementById('coachName').textContent = coachData.name;
+
+            // Load and display chat history
+            loadChatHistory();
+
+            // Switch screens
+            document.getElementById('welcomeScreen').style.display = 'none';
+            document.getElementById('configError').style.display = 'none';
+            document.getElementById('chatScreen').style.display = 'flex';
+
+            // Focus input
+            setTimeout(() => {
+                document.getElementById('messageInput').focus();
+            }, 100);
+        }
+
+        // ===== CHAT HISTORY =====
+        function loadChatHistory() {
+            const coachData = state.coachInfo[state.currentCoach];
+            const history = localStorage.getItem(coachData.storageKey);
+            const container = document.getElementById('messagesContainer');
+
+            container.innerHTML = '';
+
+            if (history) {
+                try {
+                    const messages = JSON.parse(history);
+                    messages.forEach(msg => {
+                        addMessageToUI(msg.text, msg.sender);
+                    });
+                } catch (e) {
+                    console.error('Error loading chat history:', e);
+                }
+            } else {
+                // Show welcome message
+                const welcomeMsg = `¡Hola! Soy tu ${state.coachInfo[state.currentCoach].name.toLowerCase()}. Estoy aquí para ayudarte con lo que necesites. ¿Cuál es tu pregunta hoy?`;
+                addMessageToUI(welcomeMsg, 'coach');
+            }
+
+            scrollToBottom();
+        }
+
+        function saveChatHistory(message, sender) {
+            const coachData = state.coachInfo[state.currentCoach];
+            const history = localStorage.getItem(coachData.storageKey);
+            let messages = [];
+
+            if (history) {
+                try {
+                    messages = JSON.parse(history);
+                } catch (e) {
+                    messages = [];
+                }
+            }
+
+            messages.push({ text: message, sender: sender });
+            localStorage.setItem(coachData.storageKey, JSON.stringify(messages));
+        }
+
+        function clearChatHistory() {
+            const confirmed = confirm('¿Estás seguro de que deseas limpiar la conversación?');
+            if (confirmed) {
+                const coachData = state.coachInfo[state.currentCoach];
+                localStorage.removeItem(coachData.storageKey);
+                loadChatHistory();
+            }
+        }
+
+        // ===== MESSAGE UI =====
+        function addMessageToUI(text, sender) {
+            const container = document.getElementById('messagesContainer');
+            const message = document.createElement('div');
+            message.className = `message ${sender}`;
+
+            const bubble = document.createElement('div');
+            bubble.className = 'message-bubble';
+            bubble.textContent = text;
+
+            message.appendChild(bubble);
+            container.appendChild(message);
+
+            scrollToBottom();
+        }
+
+        function addTypingIndicator() {
+            const container = document.getElementById('messagesContainer');
+            const message = document.createElement('div');
+            message.className = 'message coach';
+            message.id = 'typingIndicator';
+
+            const typing = document.createElement('div');
+            typing.className = 'typing-indicator';
+
+            for (let i = 0; i < 3; i++) {
+                const dot = document.createElement('div');
+                dot.className = 'typing-dot';
+                typing.appendChild(dot);
+            }
+
+            message.appendChild(typing);
+            container.appendChild(message);
+
+            scrollToBottom();
+        }
+
+        function removeTypingIndicator() {
+            const indicator = document.getElementById('typingIndicator');
+            if (indicator) {
+                indicator.remove();
+            }
+        }
+
+        function scrollToBottom() {
+            const container = document.getElementById('messagesContainer');
+            setTimeout(() => {
+                container.scrollTop = container.scrollHeight;
+            }, 0);
+        }
+
+        // ===== API COMMUNICATION =====
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const text = input.value.trim();
+
+            if (!text || state.isLoading) return;
+
+            // Add user message
+            addMessageToUI(text, 'user');
+            saveChatHistory(text, 'user');
+
+            input.value = '';
+            input.style.height = 'auto';
+            document.getElementById('sendButton').disabled = true;
+            state.isLoading = true;
+
+            // Show typing indicator
+            addTypingIndicator();
+
+            try {
+                const response = await getCoachResponse(text);
+                removeTypingIndicator();
+                addMessageToUI(response, 'coach');
+                saveChatHistory(response, 'coach');
+            } catch (error) {
+                removeTypingIndicator();
+                const errorMsg = 'Lo siento, tuve un problema al procesar tu mensaje. Intenta de nuevo.';
+                addMessageToUI(errorMsg, 'coach');
+                console.error('Error:', error);
+            } finally {
+                state.isLoading = false;
+                document.getElementById('sendButton').disabled = false;
+                document.getElementById('messageInput').focus();
+            }
+        }
+
+        async function getCoachResponse(userMessage) {
+            const coachData = state.coachInfo[state.currentCoach];
+
+            // Get chat history
+            const history = localStorage.getItem(coachData.storageKey) || '[]';
+            let messages = [];
+            try {
+                messages = JSON.parse(history);
+            } catch (e) {
+                messages = [];
+            }
+
+            // Build messages array for API (without welcome system message)
+            const apiMessages = [];
+
+            // Add system prompt
+            apiMessages.push({
+                role: 'system',
+                content: coachData.systemPrompt
+            });
+
+            // Add chat history (skip any system messages)
+            messages.forEach(msg => {
+                if (msg.sender === 'user') {
+                    apiMessages.push({ role: 'user', content: msg.text });
+                } else if (msg.sender === 'coach') {
+                    apiMessages.push({ role: 'assistant', content: msg.text });
+                }
+            });
+
+            // Add current user message
+            apiMessages.push({
+                role: 'user',
+                content: userMessage
+            });
+
+            const config = state.apiConfig;
+
+            if (config.provider === 'openai') {
+                return await callOpenAI(apiMessages, config);
+            } else if (config.provider === 'gemini') {
+                return await callGemini(apiMessages, config);
+            } else if (config.provider === 'anthropic') {
+                return await callAnthropic(apiMessages, config);
+            } else {
+                throw new Error('API provider no configurado');
+            }
+        }
+
+        async function callOpenAI(messages, config) {
+            const apiUrl = config.apiUrl || config.endpoint || 'https://api.openai.com/v1/chat/completions';
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${config.apiKey}`
+                },
+                body: JSON.stringify({
+                    model: config.model || 'gpt-4o',
+                    messages: messages,
+                    temperature: 0.7,
+                    max_tokens: 500
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.choices[0].message.content;
+        }
+
+        async function callGemini(messages, config) {
+            // Convert OpenAI format to Gemini format
+            const contents = [];
+
+            for (const msg of messages) {
+                if (msg.role === 'system') {
+                    // Gemini doesn't have explicit system role, prepend to first user message
+                    continue;
+                } else if (msg.role === 'user') {
+                    contents.push({
+                        role: 'user',
+                        parts: [{ text: msg.content }]
+                    });
+                } else if (msg.role === 'assistant') {
+                    contents.push({
+                        role: 'model',
+                        parts: [{ text: msg.content }]
+                    });
+                }
+            }
+
+            // Extract system prompt for system_instruction
+            const systemPrompt = messages.find(m => m.role === 'system')?.content || '';
+
+            const model = config.model || 'gemini-2.0-flash';
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${config.apiKey}`;
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    system_instruction: {
+                        parts: [{ text: systemPrompt }]
+                    },
+                    contents: contents,
+                    generationConfig: {
+                        temperature: 0.7,
+                        maxOutputTokens: 500
+                    }
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.candidates[0].content.parts[0].text;
+        }
+
+        async function callAnthropic(messages, config) {
+            const systemPrompt = messages.find(m => m.role === 'system')?.content || '';
+            const chatMessages = messages.filter(m => m.role !== 'system').map(m => ({
+                role: m.role === 'assistant' ? 'assistant' : 'user',
+                content: m.content
+            }));
+
+            const response = await fetch(config.apiUrl || config.endpoint || 'https://api.anthropic.com/v1/messages', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'x-api-key': config.apiKey,
+                    'anthropic-version': '2023-06-01',
+                    'anthropic-dangerous-direct-browser-access': 'true'
+                },
+                body: JSON.stringify({
+                    model: config.model || 'claude-sonnet-4-20250514',
+                    max_tokens: 500,
+                    system: systemPrompt,
+                    messages: chatMessages
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`API error: ${response.statusText}`);
+            }
+
+            const data = await response.json();
+            return data.content[0].text;
+        }
+
+        // ===== EVENT LISTENERS =====
+        document.getElementById('backButton').addEventListener('click', () => {
+            state.currentCoach = null;
+            document.getElementById('chatScreen').style.display = 'none';
+            document.getElementById('configError').style.display = 'none';
+            document.getElementById('welcomeScreen').style.display = 'flex';
+        });
+
+        document.getElementById('clearButton').addEventListener('click', clearChatHistory);
+
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+
+        document.getElementById('messageInput').addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // Auto-resize textarea
+        document.getElementById('messageInput').addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+        });
+
+        // ===== THEME MANAGEMENT =====
+        function initializeTheme() {
+            const savedTheme = localStorage.getItem('transfarma_theme') || 'dark';
+            setTheme(savedTheme);
+        }
+
+        function setTheme(theme) {
+            const html = document.documentElement;
+            const toggle = document.getElementById('themeToggle');
+
+            if (theme === 'light') {
+                html.setAttribute('data-theme', 'light');
+                toggle.textContent = '☀️';
+                toggle.title = 'Cambiar a tema oscuro';
+            } else {
+                html.removeAttribute('data-theme');
+                toggle.textContent = '🌙';
+                toggle.title = 'Cambiar a tema claro';
+            }
+
+            localStorage.setItem('transfarma_theme', theme);
+        }
+
+        document.getElementById('themeToggle').addEventListener('click', () => {
+            const currentTheme = localStorage.getItem('transfarma_theme') || 'dark';
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            setTheme(newTheme);
+        });
+
+        // ===== INITIALIZATION =====
+        initializeTheme();
+        checkAndLoadConfig();
+    </script>
+</body>
+</html>

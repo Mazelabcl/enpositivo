@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Transfarma Te Transforma</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box}
+
+:root{
+  --primary:#00C9A7;
+  --primary-dark:#00A78B;
+  --accent:#7B61FF;
+  --accent2:#FF6B9D;
+  --dark:#0A0A1A;
+  --darker:#050510;
+  --light:#F0F4FF;
+  --glass:rgba(255,255,255,0.05);
+  --glass-border:rgba(255,255,255,0.08);
+}
+
+html{scroll-behavior:smooth;overflow-x:hidden}
+body{
+  font-family:'Inter',sans-serif;
+  background:var(--darker);
+  color:#fff;
+  overflow-x:hidden;
+  cursor:default;
+}
+
+/* ====== CUSTOM CURSOR ====== */
+.cursor-dot{
+  width:8px;height:8px;background:var(--primary);
+  border-radius:50%;position:fixed;pointer-events:none;z-index:99999;
+  transition:transform .15s ease;mix-blend-mode:difference;
+}
+.cursor-ring{
+  width:40px;height:40px;border:2px solid var(--primary);
+  border-radius:50%;position:fixed;pointer-events:none;z-index:99998;
+  transition:transform .3s ease, width .3s ease, height .3s ease, border-color .3s ease;
+  transform:translate(-50%,-50%);
+}
+.cursor-ring.hover{width:60px;height:60px;border-color:var(--accent)}
+
+/* ====== PRELOADER ====== */
+#preloader{
+  position:fixed;inset:0;z-index:100000;
+  background:var(--darker);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .8s ease, transform .8s ease;
+}
+#preloader.hide{opacity:0;transform:scale(1.1);pointer-events:none}
+.preloader-logo{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin-bottom:2rem}
+.preloader-logo span{color:var(--primary)}
+.preloader-bar{width:200px;height:3px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden}
+.preloader-bar-fill{height:100%;background:línear-gradient(90deg,var(--primary),var(--accent));width:0;border-radius:3px;transition:width .3s ease}
+
+/* ====== PARTICLE CANVAS ====== */
+#particles{position:fixed;inset:0;z-index:0;pointer-events:none}
+
+/* ====== INTRO / SEARCH SECTION ====== */
+#intro{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.intro-content{
+  text-align:center;
+  max-width:700px;
+  opacity:0;transform:translateY(40px);
+  animation:fadeUp 1s ease .5s forwards;
+}
+@keyframes fadeUp{to{opacity:1;transform:translateY(0)}}
+
+.intro-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.5rem 1.2rem;border-radius:100px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  font-size:.8rem;font-weight:500;letter-spacing:.05em;text-transform:uppercase;
+  color:var(--primary);margin-bottom:2rem;
+  backdrop-filter:blur(10px);
+}
+.intro-badge .dot{width:6px;height:6px;background:var(--primary);border-radius:50%;animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.intro-title{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2.5rem,6vw,5rem);
+  font-weight:900;line-height:1.05;
+  margin-bottom:1rem;
+}
+.intro-title .highlight{
+  background:línear-gradient(135deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.intro-subtitle{
+  font-size:clamp(1rem,2vw,1.3rem);
+  color:rgba(255,255,255,.5);font-weight:300;
+  margin-bottom:3rem;line-height:1.6;
+}
+
+/* SEARCH INPUT */
+.search-container{
+  position:relative;width:100%;max-width:500px;margin:0 auto;
+}
+.search-wrapper{
+  position:relative;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  overflow:hidden;
+  backdrop-filter:blur(20px);
+  transition:border-color .3s ease, box-shadow .3s ease;
+}
+.search-wrapper:focus-within{
+  border-color:var(--primary);
+  box-shadow:0 0 30px rgba(0,201,167,.15),0 0 60px rgba(0,201,167,.05);
+}
+.search-wrapper input{
+  width:100%;padding:1.2rem 1.5rem;
+  background:transparent;border:none;outline:none;
+  color:#fff;font-size:1.1rem;font-family:'Inter',sans-serif;
+}
+.search-wrapper input::placeholder{color:rgba(255,255,255,.3)}
+.search-icon{
+  position:absolute;right:1.2rem;top:50%;transform:translateY(-50%);
+  color:var(--primary);opacity:.6;
+}
+
+/* AUTOCOMPLETE */
+.autocomplete-list{
+  position:absolute;top:calc(100% + 8px);left:0;right:0;
+  background:rgba(15,15,35,.95);
+  border:1px solid var(--glass-border);
+  border-radius:12px;
+  backdrop-filter:blur(20px);
+  max-height:250px;overflow-y:auto;
+  opacity:0;transform:translateY(-10px);
+  transition:opacity .3s ease, transform .3s ease;
+  pointer-events:none;z-index:100;
+}
+.autocomplete-list.visible{opacity:1;transform:translateY(0);pointer-events:all}
+.autocomplete-item{
+  padding:1rem 1.5rem;cursor:pointer;
+  display:flex;align-items:center;gap:.8rem;
+  transition:background .2s ease;
+  border-bottom:1px solid rgba(255,255,255,.03);
+}
+.autocomplete-item:last-child{border-bottom:none}
+.autocomplete-item:hover{background:rgba(0,201,167,.08)}
+.autocomplete-item .avatar{
+  width:36px;height:36px;border-radius:50%;
+  background:línear-gradient(135deg,var(--primary),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.9rem;flex-shrink:0;
+}
+.autocomplete-item .info{text-align:left}
+.autocomplete-item .info .name{font-weight:600;font-size:.95rem}
+.autocomplete-item .info .dept{font-size:.75rem;color:rgba(255,255,255,.4)}
+
+/* ====== GIFT REVEAL SECTION ====== */
+#gift-section{
+  position:relative;z-index:10;
+  min-height:100vh;
+  display:none;flex-direction:column;align-items:center;justify-content:center;
+  padding:2rem;
+}
+.gift-greeting{
+  text-align:center;
+  opacity:0;transform:scale(.9);
+  transition:all 1s ease;
+}
+.gift-greeting.visible{opacity:1;transform:scale(1)}
+.gift-greeting h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,3.5rem);
+  font-weight:700;margin-bottom:.5rem;
+}
+.gift-greeting h2 .name-text{color:var(--primary)}
+.gift-greeting p{color:rgba(255,255,255,.5);font-size:1.1rem;margin-bottom:3rem}
+
+/* GIFT BOX */
+.gift-box-container{
+  perspective:1000px;
+  cursor:pointer;
+  margin-bottom:2rem;
+}
+.gift-box{
+  width:200px;height:200px;
+  position:relative;
+  transform-style:preserve-3d;
+  animation:giftFloat 3s ease-in-out infinite;
+  transition:transform .5s ease;
+}
+.gift-box:hover{transform:scale(1.05) rotateY(10deg)}
+@keyframes giftFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-15px)}}
+
+.gift-face{
+  position:absolute;
+  width:200px;height:200px;
+  border:2px solid rgba(0,201,167,.3);
+  display:flex;align-items:center;justify-content:center;
+  backface-visibility:hidden;
+}
+.gift-front{
+  background:línear-gradient(135deg,rgba(0,201,167,.15),rgba(123,97,255,.15));
+  backdrop-filter:blur(10px);
+  border-radius:20px;
+}
+.gift-ribbon-v{
+  position:absolute;width:4px;height:100%;
+  background:línear-gradient(to bottom,var(--primary),var(--accent));
+  left:50%;transform:translateX(-50%);
+}
+.gift-ribbon-h{
+  position:absolute;height:4px;width:100%;
+  background:línear-gradient(to right,var(--primary),var(--accent));
+  top:50%;transform:translateY(-50%);
+}
+.gift-bow{
+  position:absolute;top:-20px;left:50%;transform:translateX(-50%);
+  font-size:2.5rem;filter:drop-shadow(0 0 10px rgba(0,201,167,.5));
+}
+.gift-glow{
+  position:absolute;inset:-40px;
+  background:radial-gradient(circle,rgba(0,201,167,.2) 0%,transparent 70%);
+  animation:glowPulse 2s ease-in-out infinite;
+  border-radius:50%;
+}
+@keyframes glowPulse{0%,100%{opacity:.5;transform:scale(1)}50%{opacity:1;transform:scale(1.1)}}
+
+.gift-label{
+  font-size:.9rem;color:rgba(255,255,255,.5);
+  margin-top:1rem;
+  animation:pulse 2s infinite;
+}
+.gift-label span{color:var(--primary)}
+
+/* ====== REVEAL / CINEMATIC SECTION ====== */
+#cinematic{
+  display:none;
+  position:relative;z-index:10;
+}
+
+/* HERO REVEAL */
+.hero-reveal{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;
+}
+.hero-reveal-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at center,rgba(0,201,167,.1) 0%,transparent 60%);
+}
+.hero-text-mássive{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(3rem,10vw,8rem);
+  font-weight:900;text-align:center;
+  line-height:1;
+  opacity:0;transform:scale(.5);
+  transition:all 1.5s cubic-bezier(.16,1,.3,1);
+}
+.hero-text-mássive.visible{opacity:1;transform:scale(1)}
+.hero-text-mássive .line1{display:block;color:rgba(255,255,255,.9)}
+.hero-text-mássive .line2{
+  display:block;
+  background:línear-gradient(135deg,var(--primary),var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+  background-size:200% 200%;
+  animation:gradientShift 3s ease infinite;
+}
+@keyframes gradientShift{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+/* SCROLL INDICATOR */
+.scroll-indicator{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  opacity:0;animation:fadeUp 1s ease 2s forwards;
+}
+.scroll-mouse{
+  width:24px;height:38px;border:2px solid rgba(255,255,255,.3);
+  border-radius:12px;position:relative;
+}
+.scroll-mouse::after{
+  content:'';position:absolute;width:4px;height:8px;
+  background:var(--primary);border-radius:2px;
+  top:6px;left:50%;transform:translateX(-50%);
+  animation:scrollDown 1.5s ease infinite;
+}
+@keyframes scrollDown{0%{opacity:1;transform:translateX(-50%) translateY(0)}100%{opacity:0;transform:translateX(-50%) translateY(12px)}}
+.scroll-text{font-size:.7rem;text-transform:uppercase;letter-spacing:.15em;color:rgba(255,255,255,.3)}
+
+/* ====== CINEMATIC SECTIONS ====== */
+.cin-section{
+  min-height:100vh;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;padding:4rem 2rem;
+  overflow:hidden;
+}
+
+/* PARALLAX BACKGROUNDS */
+.cin-section .bg-element{
+  position:absolute;
+  border-radius:50%;
+  filter:blur(80px);
+  opacity:.15;
+  transition:transform .5s ease;
+}
+
+/* CONTENT CARDS */
+.cin-card{
+  max-width:1100px;width:100%;
+  display:grid;grid-template-columns:1fr 1fr;gap:4rem;
+  align-items:center;
+  opacity:0;transform:translateY(80px);
+  transition:all 1s cubic-bezier(.16,1,.3,1);
+}
+.cin-card.visible{opacity:1;transform:translateY(0)}
+.cin-card.reverse{direction:rtl}
+.cin-card.reverse > *{direction:ltr}
+
+@media(max-width:768px){
+  .cin-card{grid-template-columns:1fr;gap:2rem}
+  .cin-card.reverse{direction:ltr}
+}
+
+.cin-card-visual{
+  position:relative;
+  aspect-ratio:1;
+  display:flex;align-items:center;justify-content:center;
+}
+
+.cin-card-text h3{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(1.8rem,3vw,2.8rem);
+  font-weight:700;margin-bottom:1rem;line-height:1.2;
+}
+.cin-card-text h3 .accent{color:var(--primary)}
+.cin-card-text p{
+  color:rgba(255,255,255,.5);
+  font-size:1rem;line-height:1.8;
+  margin-bottom:1.5rem;
+}
+.cin-card-text .tag-list{display:flex;flex-wrap:wrap;gap:.5rem}
+.cin-card-text .tag{
+  padding:.4rem .8rem;border-radius:100px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  font-size:.75rem;color:var(--primary);font-weight:500;
+}
+
+/* SVG ILLUSTRATIONS */
+.illustration-container{
+  width:100%;height:100%;
+  display:flex;align-items:center;justify-content:center;
+}
+.illustration-container svg{
+  width:80%;height:80%;
+  filter:drop-shadow(0 0 40px rgba(0,201,167,.2));
+}
+
+/* ANIMATED RINGS */
+.rings-container{position:relative;width:300px;height:300px}
+.ring{
+  position:absolute;border-radius:50%;
+  border:2px solid;
+  inset:0;
+  animation:ringRotate var(--duration) línear infinite;
+}
+@keyframes ringRotate{to{transform:rotate(360deg)}}
+
+/* STAT COUNTER */
+.stat-grid{
+  display:grid;grid-template-columns:repeat(2,1fr);gap:1.5rem;
+  margin-top:2rem;
+}
+.stat-item{
+  padding:1.5rem;
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:16px;
+  text-align:center;
+  backdrop-filter:blur(10px);
+}
+.stat-number{
+  font-size:2.5rem;font-weight:800;
+  background:línear-gradient(135deg,var(--primary),var(--accent));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;
+}
+.stat-label{font-size:.8rem;color:rgba(255,255,255,.4);margin-top:.3rem}
+
+/* TIMELINE */
+.timeline{
+  position:relative;
+  padding-left:2rem;
+  margin-top:2rem;
+}
+.timeline::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;
+  width:2px;
+  background:línear-gradient(to bottom,var(--primary),var(--accent),var(--accent2));
+}
+.timeline-item{
+  position:relative;
+  padding:1.2rem 0 1.2rem 1.5rem;
+  opacity:0;transform:translateX(-20px);
+  transition:all .6s ease;
+}
+.timeline-item.visible{opacity:1;transform:translateX(0)}
+.timeline-item::before{
+  content:'';position:absolute;
+  left:-2rem;top:1.5rem;
+  width:12px;height:12px;
+  border-radius:50%;
+  background:var(--primary);
+  border:3px solid var(--darker);
+  margin-left:-5px;
+}
+.timeline-item h4{font-size:1rem;font-weight:600;margin-bottom:.3rem;color:var(--primary)}
+.timeline-item p{font-size:.85rem;color:rgba(255,255,255,.45);line-height:1.5}
+
+/* MORPHING SHAPE */
+.morph-container{
+  width:300px;height:300px;
+  position:relative;
+}
+.morph-shape{
+  width:100%;height:100%;
+}
+
+/* ====== PROGRAM DETAIL CARDS ====== */
+.programs-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+  gap:1.5rem;max-width:1100px;margin:0 auto;
+  padding:0 2rem;
+}
+.program-card{
+  background:var(--glass);
+  border:1px solid var(--glass-border);
+  border-radius:20px;
+  padding:2rem;
+  backdrop-filter:blur(10px);
+  position:relative;overflow:hidden;
+  opacity:0;transform:translateY(40px);
+  transition:all .6s ease, border-color .3s ease, box-shadow .3s ease;
+}
+.program-card.visible{opacity:1;transform:translateY(0)}
+.program-card:hover{
+  border-color:var(--primary);
+  box-shadow:0 0 30px rgba(0,201,167,.1);
+  transform:translateY(-5px) !important;
+}
+.program-card .card-icon{
+  width:56px;height:56px;
+  border-radius:14px;
+  background:línear-gradient(135deg,rgba(0,201,167,.15),rgba(123,97,255,.15));
+  display:flex;align-items:center;justify-content:center;
+  font-size:1.5rem;margin-bottom:1.2rem;
+}
+.program-card h4{font-size:1.2rem;font-weight:700;margin-bottom:.5rem}
+.program-card p{font-size:.9rem;color:rgba(255,255,255,.45);line-height:1.6}
+.program-card .card-gradient{
+  position:absolute;top:-50%;right:-50%;
+  width:100%;height:100%;
+  background:radial-gradient(circle,rgba(0,201,167,.08) 0%,transparent 70%);
+  pointer-events:none;
+}
+
+/* ====== CTA FINAL ====== */
+#cta-final{
+  min-height:80vh;
+  display:flex;align-items:center;justify-content:center;
+  text-align:center;
+  padding:4rem 2rem;
+  position:relative;
+  overflow:hidden;
+}
+.cta-content{
+  opacity:0;transform:translateY(40px);
+  transition:all 1s ease;
+}
+.cta-content.visible{opacity:1;transform:translateY(0)}
+.cta-content h2{
+  font-family:'Playfair Display',serif;
+  font-size:clamp(2rem,5vw,4rem);
+  font-weight:900;margin-bottom:1rem;
+}
+.cta-content h2 .gradient-text{
+  background:línear-gradient(135deg,var(--primary),var(--accent),var(--accent2));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;background-size:200% 200%;
+  animation:gradientShift 3s ease infinite;
+}
+.cta-content p{
+  color:rgba(255,255,255,.5);
+  font-size:1.1rem;max-width:600px;margin:0 auto 2rem;
+  line-height:1.7;
+}
+.cta-badge{
+  display:inline-flex;align-items:center;gap:.8rem;
+  padding:1rem 2rem;border-radius:100px;
+  background:línear-gradient(135deg,var(--primary),var(--accent));
+  font-weight:700;font-size:1.1rem;
+  box-shadow:0 0 40px rgba(0,201,167,.3);
+  cursor:default;
+  transition:transform .3s ease, box-shadow .3s ease;
+}
+.cta-badge:hover{transform:scale(1.05);box-shadow:0 0 60px rgba(0,201,167,.4)}
+
+/* ====== PROGRESS BAR ====== */
+.progress-bar{
+  position:fixed;top:0;left:0;height:3px;
+  background:línear-gradient(90deg,var(--primary),var(--accent),var(--accent2));
+  z-index:99997;
+  width:0;
+  transition:width .1s línear;
+}
+
+/* ====== NOISE OVERLAY ====== */
+.noise{
+  position:fixed;inset:0;z-index:99996;
+  pointer-events:none;
+  opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ====== CONFETTI ====== */
+.confetti-piece{
+  position:fixed;
+  width:10px;height:10px;
+  z-index:99995;
+  pointer-events:none;
+  animation:confettiFall var(--fall-duration) ease-in forwards;
+}
+@keyframes confettiFall{
+  0%{opacity:1;transform:translateY(0) rotate(0deg)}
+  100%{opacity:0;transform:translateY(100vh) rotate(720deg)}
+}
+
+/* Smooth transitions between sections */
+.section-transition{
+  height:20vh;
+  position:relative;
+  z-index:10;
+}
+
+/* Seamless section blending */
+.cin-section::before{
+  content:'';position:absolute;top:-10vh;left:0;right:0;height:20vh;
+  background:línear-gradient(to bottom,transparent,var(--darker));
+  pointer-events:none;z-index:-1;
+}
+.cin-section::after{
+  content:'';position:absolute;bottom:-10vh;left:0;right:0;height:20vh;
+  background:línear-gradient(to top,transparent,var(--darker));
+  pointer-events:none;z-index:-1;
+}
+
+/* Animated gradient divider */
+.gradient-divider{
+  width:80px;height:3px;
+  background:línear-gradient(90deg,var(--primary),var(--accent));
+  border-radius:3px;
+  margin:0 auto 2rem;
+}
+
+/* ====== RESPONSIVE ====== */
+@media(max-width:768px){
+  .cin-card{padding:0 1rem}
+  .stat-grid{grid-template-columns:1fr}
+  .programs-grid{grid-template-columns:1fr}
+  .rings-container{width:200px;height:200px}
+  .morph-container{width:200px;height:200px}
+  .gift-box{width:150px;height:150px}
+  .gift-face{width:150px;height:150px}
+}
+
+/* ====== LIGHT/DARK MODE TOGGLE ====== */
+.theme-toggle{
+  position:fixed;top:20px;right:20px;z-index:9998;
+  width:50px;height:50px;
+  background:var(--glass);border:1px solid var(--glass-border);
+  border-radius:50%;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all .3s ease;
+  backdrop-filter:blur(10px);
+  font-size:1.5rem;
+}
+.theme-toggle:hover{
+  background:rgba(0,201,167,.1);
+  border-color:var(--primary);
+  transform:scale(1.1);
+}
+
+/* Light mode theme */
+[data-theme="light"]{
+  --darker:#F5F7FA;
+  --dark:#FFFFFF;
+  --light:#F5F7FA;
+  --glass:rgba(0,0,0,.05);
+  --glass-border:rgba(0,0,0,.1);
+  background:#F5F7FA;
+  color:#1A1A2E;
+}
+
+[data-theme="light"] body{
+  background:#F5F7FA;
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .cursor-dot{
+  background:var(--primary);
+  mix-blend-mode:multiply;
+}
+
+[data-theme="light"] .cursor-ring{
+  border-color:var(--primary);
+}
+
+[data-theme="light"] .intro-subtitle{
+  color:rgba(26,26,46,.5);
+}
+
+[data-theme="light"] .intro-badge{
+  background:rgba(0,0,0,.05);
+  border-color:rgba(0,0,0,.1);
+  color:var(--primary);
+}
+
+[data-theme="light"] .search-wrapper{
+  background:rgba(0,0,0,.05);
+  border-color:rgba(0,0,0,.1);
+}
+
+[data-theme="light"] .search-wrapper input{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .search-wrapper input::placeholder{
+  color:rgba(26,26,46,.3);
+}
+
+[data-theme="light"] .autocomplete-list{
+  background:rgba(255,255,255,.95);
+  border-color:rgba(0,0,0,.1);
+}
+
+[data-theme="light"] .autocomplete-item{
+  border-color:rgba(0,0,0,.05);
+}
+
+[data-theme="light"] .autocomplete-item:hover{
+  background:rgba(0,201,167,.08);
+}
+
+[data-theme="light"] .autocomplete-item .info .dept{
+  color:rgba(26,26,46,.4);
+}
+
+[data-theme="light"] .gift-greeting h2,
+[data-theme="light"] .gift-greeting p{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .hero-text-mássive .line1{
+  color:rgba(26,26,46,.9);
+}
+
+[data-theme="light"] .scroll-text{
+  color:rgba(26,26,46,.3);
+}
+
+[data-theme="light"] .scroll-mouse{
+  border-color:rgba(26,26,46,.3);
+}
+
+[data-theme="light"] .cin-card{
+  background:rgba(255,255,255,.8);
+  backdrop-filter:blur(10px);
+}
+
+[data-theme="light"] .cin-card h3,
+[data-theme="light"] .cin-card p{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .tag{
+  background:rgba(0,201,167,.1);
+  color:var(--primary);
+  border-color:rgba(0,201,167,.2);
+}
+
+[data-theme="light"] .stat-item{
+  background:rgba(255,255,255,.5);
+}
+
+[data-theme="light"] .stat-item h4,
+[data-theme="light"] .stat-item p{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .program-card{
+  background:rgba(255,255,255,.7);
+  backdrop-filter:blur(10px);
+}
+
+[data-theme="light"] .program-card h4,
+[data-theme="light"] .program-card p{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] #cta-final h2,
+[data-theme="light"] #cta-final p{
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .cta-badge{
+  box-shadow:0 0 40px rgba(0,201,167,.2);
+}
+
+[data-theme="light"] .theme-toggle{
+  background:rgba(0,0,0,.05);
+  border-color:rgba(0,0,0,.1);
+  color:#1A1A2E;
+}
+
+[data-theme="light"] .noise{
+  opacity:.01;
+}
+
+</style>
+</head>
+<body>
+
+<!-- NOISE OVERLAY -->
+<div class="noise"></div>
+
+<!-- PROGRESS BAR -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- CUSTOM CURSOR -->
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+
+<!-- PARTICLE BACKGROUND -->
+<canvas id="particles"></canvas>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="preloader-logo">TRANS<span>FARMA</span></div>
+  <div class="preloader-bar"><div class="preloader-bar-fill" id="preloaderFill"></div></div>
+</div>
+
+<!-- ===== SECTION 1: INTRO / NAME SEARCH ===== -->
+<section id="intro">
+  <div class="intro-content">
+    <div class="intro-badge">
+      <span class="dot"></span>
+      Programa de Bienestar 2026
+    </div>
+    <h1 class="intro-title">
+      <b>TransFarma</b><br><span class="highlight">Te Transforma</span>
+    </h1>
+    <p class="intro-subtitle">
+      Detrás de cada ruta, cada despacho y cada turno hay alguien que merece sentirse bien.<br>Ingresa tu nombre y descubre lo que viene.
+    </p>
+        <!-- TransFarma Logo -->
+    <div style="margin-bottom:2rem;display:flex;align-items:center;justify-content:center;">
+      <svg viewBox="0 0 300 180" style="max-width:280px;width:100%;height:auto;" xmlns="http://www.w3.org/2000/svg">
+        <!-- Company Name -->
+        <text x="150" y="60" font-family="Playfair Display, serif" font-size="48" font-weight="900" text-anchor="middle" fill="#7AB929" letter-spacing="-1">
+          TransFarma
+        </text>
+        <!-- Wave underneath -->
+        <path d="M 30 85 Q 75 75 120 85 T 210 85 T 300 85" stroke="#2B6CB0" stroke-width="4" fill="none" stroke-linecap="round"/>
+        <!-- Tagline -->
+        <text x="150" y="130" font-family="Inter, sans-serif" font-size="14" text-anchor="middle" fill="#999999" letter-spacing="0.5">
+          Logística Farmacéutica
+        </text>
+      </svg>
+    </div>
+
+    <div class="search-container">
+      <div class="search-wrapper">
+        <input type="text" id="nameInput" placeholder="Escribe tu nombre..." autocomplete="off">
+        <div class="search-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </div>
+      </div>
+      <div class="autocomplete-list" id="autocompleteList"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ===== SECTION 2: GIFT REVEAL ===== -->
+<section id="gift-section">
+  <div class="gift-greeting" id="giftGreeting">
+    <h2>Hola, <span class="name-text" id="selectedName">David</span></h2>
+    <p>Tenemos algo especial para ti...</p>
+    <div class="gift-box-container" id="giftBoxContainer">
+      <div class="gift-box" id="giftBox">
+        <div class="gift-glow"></div>
+        <div class="gift-face gift-front">
+          <div class="gift-ribbon-v"></div>
+          <div class="gift-ribbon-h"></div>
+        </div>
+        <div class="gift-bow">🎀</div>
+      </div>
+    </div>
+    <p class="gift-label">Haz <span>click</span> para abrir tu regalo</p>
+  </div>
+</section>
+
+<!-- ===== SECTION 3: CINEMATIC EXPERIENCE ===== -->
+<div id="cinematic">
+
+  <!-- HERO REVEAL -->
+  <section class="hero-reveal">
+    <div class="hero-reveal-bg"></div>
+    <div class="hero-text-mássive" id="heroText">
+      <span class="line1">Tu bienestar</span>
+      <span class="line2">es nuestra prioridad</span>
+    </div>
+    <div class="scroll-indicator">
+      <div class="scroll-mouse"></div>
+      <span class="scroll-text">Desliza para descubrir</span>
+    </div>
+  </section>
+
+  <!-- SECTION: SALUD MENTAL -->
+  <section class="cin-section" id="sec-mental">
+    <div class="bg-element" style="width:400px;height:400px;background:var(--primary);top:-10%;right:-10%"></div>
+    <div class="bg-element" style="width:300px;height:300px;background:var(--accent);bottom:-10%;left:-5%"></div>
+    <div class="cin-card" data-animate>
+      <div class="cin-card-visual">
+        <div class="illustration-container">
+          <svg viewBox="0 0 400 400" fill="none">
+            <!-- Brain with glow -->
+            <defs>
+              <línearGradient id="brainGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00C9A7"/>
+                <stop offset="100%" style="stop-color:#7B61FF"/>
+              </línearGradient>
+              <filter id="glow1">
+                <feGaussianBlur stdDeviation="4" result="coloredBlur"/>
+                <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+              </filter>
+            </defs>
+            <circle cx="200" cy="200" r="120" fill="none" stroke="url(#brainGrad)" stroke-width="1" opacity=".2">
+              <animate attributeName="r" values="120;130;120" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="200" cy="200" r="90" fill="none" stroke="url(#brainGrad)" stroke-width="1" opacity=".3">
+              <animate attributeName="r" values="90;95;90" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Brain paths -->
+            <g filter="url(#glow1)" opacity=".9">
+              <path d="M200 100 C160 100 130 130 130 170 C130 190 140 210 160 220 C150 240 155 270 175 285 C190 295 210 295 225 285 C245 270 250 240 240 220 C260 210 270 190 270 170 C270 130 240 100 200 100Z" stroke="url(#brainGrad)" stroke-width="2" fill="rgba(0,201,167,.05)">
+                <animate attributeName="opacity" values=".7;1;.7" dur="3s" repeatCount="indefinite"/>
+              </path>
+              <path d="M200 120 L200 280" stroke="url(#brainGrad)" stroke-width="1" opacity=".4"/>
+              <!-- Neural connections -->
+              <circle cx="170" cy="160" r="4" fill="#00C9A7">
+                <animate attributeName="opacity" values="0;1;0" dur="2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="230" cy="160" r="4" fill="#7B61FF">
+                <animate attributeName="opacity" values="0;1;0" dur="2.5s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="180" cy="210" r="3" fill="#00C9A7">
+                <animate attributeName="opacity" values="0;1;0" dur="1.8s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="220" cy="210" r="3" fill="#7B61FF">
+                <animate attributeName="opacity" values="0;1;0" dur="2.2s" repeatCount="indefinite"/>
+              </circle>
+              <circle cx="200" cy="250" r="4" fill="#FF6B9D">
+                <animate attributeName="opacity" values="0;1;0" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <!-- Synaptic lines -->
+              <line x1="170" y1="160" x2="230" y2="160" stroke="#00C9A7" stroke-width=".5" opacity=".3">
+                <animate attributeName="opacity" values=".1;.5;.1" dur="2s" repeatCount="indefinite"/>
+              </line>
+              <line x1="180" y1="210" x2="220" y2="210" stroke="#7B61FF" stroke-width=".5" opacity=".3">
+                <animate attributeName="opacity" values=".1;.5;.1" dur="2.3s" repeatCount="indefinite"/>
+              </line>
+              <line x1="170" y1="160" x2="200" y2="250" stroke="#FF6B9D" stroke-width=".5" opacity=".2">
+                <animate attributeName="opacity" values=".1;.4;.1" dur="2.7s" repeatCount="indefinite"/>
+              </line>
+            </g>
+            <!-- Floating particles -->
+            <circle cx="120" cy="140" r="2" fill="#00C9A7" opacity=".5">
+              <animate attributeName="cy" values="140;130;140" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="280" cy="180" r="2" fill="#7B61FF" opacity=".5">
+              <animate attributeName="cy" values="180;170;180" dur="3.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="150" cy="260" r="1.5" fill="#FF6B9D" opacity=".4">
+              <animate attributeName="cy" values="260;250;260" dur="4.5s" repeatCount="indefinite"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+      <div class="cin-card-text">
+        <div class="gradient-divider"></div>
+        <h3>Mente en <span class="accent">Equilibrio</span></h3>
+        <p>
+          Sesiones de wellness enfocadas en el manejo del estrés laboral,
+          coaching grupal y herramientas prácticas para la presión del día a día.
+          Porque aguantar en silencio no es fortaleza.
+        </p>
+        <div class="tag-list">
+          <span class="tag">Wellness</span>
+          <span class="tag">Manejo de Estrés</span>
+          <span class="tag">Coaching Grupal</span>
+          <span class="tag">Herramientas Prácticas</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: ACTIVIDAD FISICA -->
+  <section class="cin-section" id="sec-fitness">
+    <div class="bg-element" style="width:350px;height:350px;background:var(--accent);top:10%;left:-10%"></div>
+    <div class="cin-card reverse" data-animate>
+      <div class="cin-card-visual">
+        <div class="illustration-container">
+          <svg viewBox="0 0 400 400" fill="none">
+            <defs>
+              <línearGradient id="fitGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#7B61FF"/>
+                <stop offset="100%" style="stop-color:#FF6B9D"/>
+              </línearGradient>
+            </defs>
+            <!-- Heart rate line -->
+            <path d="M50 200 L120 200 L140 150 L160 250 L180 180 L200 220 L220 190 L240 200 L350 200"
+                  stroke="url(#fitGrad)" stroke-width="3" fill="none" stroke-linecap="round" stroke-linejoin="round">
+              <animate attributeName="stroke-dasharray" values="0 1000;600 0" dur="3s" repeatCount="indefinite"/>
+            </path>
+            <!-- Pulse rings -->
+            <circle cx="200" cy="200" r="60" stroke="#7B61FF" stroke-width="1" fill="none" opacity=".2">
+              <animate attributeName="r" values="60;80;60" dur="2s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".3;.05;.3" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="200" cy="200" r="40" stroke="#FF6B9D" stroke-width="1" fill="none" opacity=".3">
+              <animate attributeName="r" values="40;55;40" dur="1.8s" repeatCount="indefinite"/>
+              <animate attributeName="opacity" values=".4;.1;.4" dur="1.8s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Heart icon -->
+            <g transform="translate(175, 175) scale(0.4)" fill="url(#fitGrad)">
+              <path d="M60 20 C60 0, 30 -10, 15 10 C0 30, 0 50, 30 80 C33 83, 60 110, 60 110 C60 110, 87 83, 90 80 C120 50, 120 30, 105 10 C90 -10, 60 0, 60 20Z" opacity=".8">
+                <animate attributeName="transform" values="scale(1);scale(1.1);scale(1)" dur="1s" repeatCount="indefinite"/>
+              </path>
+            </g>
+            <!-- Energy dots -->
+            <circle cx="100" cy="170" r="3" fill="#7B61FF">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="0s"/>
+            </circle>
+            <circle cx="300" cy="170" r="3" fill="#FF6B9D">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin=".5s"/>
+            </circle>
+            <circle cx="200" cy="120" r="2" fill="#00C9A7">
+              <animate attributeName="opacity" values="0;1;0" dur="1.5s" repeatCount="indefinite" begin="1s"/>
+            </circle>
+          </svg>
+        </div>
+      </div>
+      <div class="cin-card-text">
+        <div class="gradient-divider"></div>
+        <h3>Cuerpo en <span class="accent">Movimiento</span></h3>
+        <p>
+          Pausas activas diseñadas para choferes y operarios de bodega: rutinas de movilidad,
+          elongación y activación muscular que puedes hacer en 10 minutos.
+          Porque tu cuerpo aguanta la pega, pero necesita que lo cuides.
+        </p>
+        <div class="tag-list">
+          <span class="tag">Pausas Activas</span>
+          <span class="tag">Movilidad</span>
+          <span class="tag">Elongacion</span>
+          <span class="tag">Prevención de Lesiones</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: NUTRICION -->
+  <section class="cin-section" id="sec-nutrition">
+    <div class="bg-element" style="width:400px;height:400px;background:var(--accent2);bottom:-5%;right:-5%"></div>
+    <div class="cin-card" data-animate>
+      <div class="cin-card-visual">
+        <div class="illustration-container">
+          <svg viewBox="0 0 400 400" fill="none">
+            <defs>
+              <línearGradient id="nutGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#FF6B9D"/>
+                <stop offset="50%" style="stop-color:#00C9A7"/>
+                <stop offset="100%" style="stop-color:#7B61FF"/>
+              </línearGradient>
+            </defs>
+            <!-- Leaf shape -->
+            <path d="M200 320 C200 320 120 250 120 180 C120 120 155 80 200 80 C245 80 280 120 280 180 C280 250 200 320 200 320Z"
+                  stroke="url(#nutGrad)" stroke-width="2" fill="rgba(0,201,167,.05)">
+              <animate attributeName="opacity" values=".6;1;.6" dur="4s" repeatCount="indefinite"/>
+            </path>
+            <!-- Leaf vein -->
+            <path d="M200 100 L200 300" stroke="url(#nutGrad)" stroke-width="1" opacity=".3"/>
+            <path d="M200 160 L160 130" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <path d="M200 160 L240 130" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <path d="M200 200 L150 170" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <path d="M200 200 L250 170" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <path d="M200 240 L160 215" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <path d="M200 240 L240 215" stroke="url(#nutGrad)" stroke-width="1" opacity=".2"/>
+            <!-- Nutrient particles -->
+            <circle cx="170" cy="150" r="5" fill="#00C9A7" opacity=".6">
+              <animate attributeName="cy" values="150;140;150" dur="3s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="230" cy="150" r="4" fill="#7B61FF" opacity=".5">
+              <animate attributeName="cy" values="150;142;150" dur="3.5s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="200" cy="200" r="6" fill="#FF6B9D" opacity=".5">
+              <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="180" cy="240" r="3" fill="#00C9A7" opacity=".4">
+              <animate attributeName="cy" values="240;233;240" dur="4s" repeatCount="indefinite"/>
+            </circle>
+            <circle cx="220" cy="240" r="4" fill="#7B61FF" opacity=".4">
+              <animate attributeName="cy" values="240;235;240" dur="3.2s" repeatCount="indefinite"/>
+            </circle>
+            <!-- Orbiting dot -->
+            <circle r="3" fill="#00C9A7">
+              <animateMotion dur="6s" repeatCount="indefinite">
+                <mpath href="#nutOrbit"/>
+              </animateMotion>
+            </circle>
+            <path id="nutOrbit" d="M200 320 C200 320 120 250 120 180 C120 120 155 80 200 80 C245 80 280 120 280 180 C280 250 200 320 200 320Z" fill="none"/>
+          </svg>
+        </div>
+      </div>
+      <div class="cin-card-text">
+        <div class="gradient-divider"></div>
+        <h3>Protocolos de <span class="accent">Autocuidado</span></h3>
+        <p>
+          Consultas con nutriciónistas que entienden los turnos rotativos y la vida en ruta.
+          Planes alimenticios que funcionan con tu realidad, no con la de un influencer.
+          Colaciones saludables disponibles en bodega y despacho.
+        </p>
+        <div class="tag-list">
+          <span class="tag">Nutriciónista</span>
+          <span class="tag">Planes para Turnos</span>
+          <span class="tag">Colaciones en Ruta</span>
+          <span class="tag">Talleres Prácticos</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: FLEXIBILIDAD Y BALANCE -->
+  <section class="cin-section" id="sec-balance">
+    <div class="bg-element" style="width:300px;height:300px;background:var(--primary);top:5%;right:10%"></div>
+    <div class="cin-card reverse" data-animate>
+      <div class="cin-card-visual">
+        <div class="rings-container">
+          <div class="ring" style="border-color:rgba(0,201,167,.3);--duration:8s"></div>
+          <div class="ring" style="inset:20px;border-color:rgba(123,97,255,.3);--duration:12s;animation-direction:reverse"></div>
+          <div class="ring" style="inset:40px;border-color:rgba(255,107,157,.3);--duration:6s"></div>
+          <div class="ring" style="inset:60px;border-color:rgba(0,201,167,.4);--duration:10s;animation-direction:reverse"></div>
+          <div class="ring" style="inset:80px;border-color:rgba(123,97,255,.4);--duration:7s"></div>
+          <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center">
+            <svg width="60" height="60" viewBox="0 0 60 60">
+              <circle cx="30" cy="30" r="25" fill="none" stroke="url(#brainGrad)" stroke-width="2">
+                <animate attributeName="stroke-dasharray" values="0 157;157 0" dur="3s" repeatCount="indefinite"/>
+              </circle>
+              <text x="30" y="35" text-anchor="middle" fill="#00C9A7" font-size="18" font-weight="bold">∞</text>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="cin-card-text">
+        <div class="gradient-divider"></div>
+        <h3>Equilibrio <span class="accent">Vida-Trabajo</span></h3>
+        <p>
+          Dias de bienestar personal, espacios de descanso renovados en las instalaciones,
+          actividades de integración y reconocimiento entre compañeros.
+          Porque la productividad nace del equilibrio y la cultura se construye entre todos.
+        </p>
+        <div class="stat-grid">
+          <div class="stat-item">
+            <div class="stat-number" data-target="4">0</div>
+            <div class="stat-label">Dias wellness al año</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="100">0</div>
+            <div class="stat-label">% cobertura salud</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="12">0</div>
+            <div class="stat-label">Talleres mensuales</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number" data-target="24">0</div>
+            <div class="stat-label">Hrs de apoyo /7</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: TIMELINE / ROADMAP -->
+  <section class="cin-section" id="sec-timeline">
+    <div class="bg-element" style="width:500px;height:500px;background:var(--accent);top:-20%;left:-15%"></div>
+    <div class="cin-card" data-animate>
+      <div class="cin-card-visual">
+        <div class="morph-container">
+          <svg class="morph-shape" viewBox="0 0 300 300">
+            <defs>
+              <línearGradient id="morphGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:#00C9A7;stop-opacity:.3"/>
+                <stop offset="100%" style="stop-color:#7B61FF;stop-opacity:.3"/>
+              </línearGradient>
+            </defs>
+            <path fill="url(#morphGrad)" stroke="url(#brainGrad)" stroke-width="1">
+              <animate attributeName="d" dur="8s" repeatCount="indefinite"
+                values="M150,30 C230,30 270,90 270,150 C270,210 230,270 150,270 C70,270 30,210 30,150 C30,90 70,30 150,30Z;
+                        M150,50 C210,30 280,80 260,150 C240,220 210,260 150,250 C90,240 40,220 50,150 C60,80 90,70 150,50Z;
+                        M150,30 C230,30 270,90 270,150 C270,210 230,270 150,270 C70,270 30,210 30,150 C30,90 70,30 150,30Z"/>
+            </path>
+            <text x="150" y="140" text-anchor="middle" fill="#fff" font-family="Playfair Display" font-size="24" font-weight="700">2026</text>
+            <text x="150" y="170" text-anchor="middle" fill="rgba(255,255,255,.5)" font-family="Inter" font-size="12">Roadmap Bienestar</text>
+          </svg>
+        </div>
+      </div>
+      <div class="cin-card-text">
+        <div class="gradient-divider"></div>
+        <h3>Tu viaje de <span class="accent">Transformación</span></h3>
+        <div class="timeline">
+          <div class="timeline-item" data-timeline>
+            <h4>Abril 2026 — Lanzamiento</h4>
+            <p>Kick-off del programa con evaluación de bienestar personalizada y asignación de coach.</p>
+          </div>
+          <div class="timeline-item" data-timeline>
+            <h4>Mayo-Junio — Activación</h4>
+            <p>Inicio de talleres grupales, acceso a plataforma digital y primeras sesiones individuales.</p>
+          </div>
+          <div class="timeline-item" data-timeline>
+            <h4>Julio-Septiembre — Consolidación</h4>
+            <p>Desafios wellness, actividades outdoor y seguimiento de progreso con métricas personales.</p>
+          </div>
+          <div class="timeline-item" data-timeline>
+            <h4>Octubre-Diciembre — Transformación</h4>
+            <p>Medición de impacto, celebración de logros y planificación del siguiente ciclo.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION: PROGRAMS GRID -->
+  <section class="cin-section" style="flex-direction:column;gap:3rem" id="sec-programs">
+    <div style="text-align:center;opacity:0;transform:translateY(40px);transition:all 1s ease" data-animate-title>
+      <div class="gradient-divider"></div>
+      <h3 style="font-family:'Playfair Display',serif;font-size:clamp(1.8rem,4vw,3rem);font-weight:700">
+        Todo lo que <span style="color:var(--primary)">incluye</span>
+      </h3>
+      <p style="color:rgba(255,255,255,.4);margin-top:.5rem;font-size:1rem">Un programa integral diseñado para cada dimension de tu vida</p>
+    </div>
+    <div class="programs-grid">
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">🧠</div>
+        <h4>Salud Mental</h4>
+        <p>Psicologos especializados en estrés laboral, coaching emocional y línea de apoyo confidencial.</p>
+      </div>
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">🏋️</div>
+        <h4>Pausas Activas</h4>
+        <p>Rutinas de movilidad y elongación diseñadas para choferes, operarios de bodega y personal administrativo.</p>
+      </div>
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">🥗</div>
+        <h4>Nutrición Real</h4>
+        <p>Planes alimenticios para turnos rotativos, consultas con nutriciónistas y colaciones saludables en ruta.</p>
+      </div>
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">🤝</div>
+        <h4>Cultura y Equipo</h4>
+        <p>Jornadas de integración, reconocimiento entre pares, espacios de escucha activa y actividades grupales.</p>
+      </div>
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">🛡️</div>
+        <h4>Prevención</h4>
+        <p>Talleres de ergonomía para conducción y carga, manejo de fatiga en ruta y cuidado postural.</p>
+      </div>
+      <div class="program-card" data-card>
+        <div class="card-gradient"></div>
+        <div class="card-icon">👨‍👩‍👧</div>
+        <h4>Familia</h4>
+        <p>Extensión de beneficios a tu grupo familiar, actividades de integración y apoyo parental.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA FINAL -->
+  <section id="cta-final">
+    <div class="bg-element" style="width:600px;height:600px;background:var(--primary);top:-20%;left:50%;transform:translateX(-50%)"></div>
+    <div class="cta-content" data-animate>
+      <div class="gradient-divider"></div>
+      <h2>
+        Tu transformación<br>
+        <span class="gradient-text">comienza ahora</span>
+      </h2>
+      <p>
+        Movemos farmacos, pero lo que realmente nos mueve eres tu.
+        Este programa es nuestra apuesta por una nueva cultura de bienestar.
+      </p>
+      <div class="cta-badge">
+        ✨ <b>TransFarma</b> Te Transforma — 2026
+      </div>
+      <p style="margin-top:3rem;font-size:.8rem;color:rgba(255,255,255,.2)">
+        Programa de Bienestar Integral <b>TransFarma</b> &copy; 2026
+      </p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+// ===========================
+// SIMULATED DATABASE
+// ===========================
+const employeeDB = [
+  {name:"David Gonzalez", dept:"Logística"},
+  {name:"David Morales", dept:"Operaciones"},
+  {name:"David Silva", dept:"Administración"},
+  {name:"Maria Fernanda Lopez", dept:"Calidad"},
+  {name:"Maria Jose Hernandez", dept:"Recursos Humanos"},
+  {name:"Maria Paz Torres", dept:"Logística"},
+  {name:"Carlos Andres Reyes", dept:"Transporte"},
+  {name:"Carlos Eduardo Diaz", dept:"Almacen"},
+  {name:"Ana Belen Rojas", dept:"Finanzas"},
+  {name:"Ana Maria Soto", dept:"Calidad"},
+  {name:"Juan Pablo Munoz", dept:"Operaciones"},
+  {name:"Juan Carlos Fernandez", dept:"Gerencia"},
+  {name:"Claudia Alejandra Vega", dept:"Recursos Humanos"},
+  {name:"Claudia Marcela Rios", dept:"Logística"},
+  {name:"Andres Felipe Castro", dept:"Transporte"},
+  {name:"Andres Ignacio Pena", dept:"Almacen"},
+  {name:"Valentina Andrea Suarez", dept:"Administración"},
+  {name:"Valentina Paz Jimenez", dept:"Calidad"},
+  {name:"Sebastian Nicolas Ortiz", dept:"Operaciones"},
+  {name:"Sebastian Andres Vargas", dept:"Logística"},
+  {name:"Camila Ignacia Fuentes", dept:"Finanzas"},
+  {name:"Camila Andrea Navarro", dept:"Recursos Humanos"},
+  {name:"Diego Alejandro Molina", dept:"Transporte"},
+  {name:"Diego Fernando Espinoza", dept:"Almacen"},
+  {name:"Francisca Belen Ramirez", dept:"Calidad"},
+  {name:"Francisca Javiera Paredes", dept:"Administración"},
+  {name:"Rodrigo Andres Gutierrez", dept:"Gerencia"},
+  {name:"Rodrigo Nicolas Bravo", dept:"Operaciones"},
+  {name:"Daniela Paz Contreras", dept:"Logística"},
+  {name:"Daniela Alejandra Figueroa", dept:"Finanzas"},
+  {name:"Aldo Tapia", dept:"Consultoría Bienestar"},
+  {name:"Aldo Moreno", dept:"Operaciones"},
+  {name:"Patricia Andrea Medina", dept:"Recursos Humanos"},
+  {name:"Patricia Lorena Sandoval", dept:"Calidad"},
+  {name:"Luis Fernando Herrera", dept:"Transporte"},
+  {name:"Luis Alberto Pinto", dept:"Almacen"},
+  {name:"Javiera Ignacia Flores", dept:"Administración"},
+  {name:"Javiera Constanza Rivera", dept:"Finanzas"},
+  {name:"Tomás Andres Acevedo", dept:"Operaciones"},
+  {name:"Tomás Ignacio Alarcon", dept:"Logística"},
+];
+
+// ===========================
+// PRELOADER
+// ===========================
+let loadProgress = 0;
+const preloaderFill = document.getElementById('preloaderFill');
+const preloader = document.getElementById('preloader');
+
+function animatePreloader(){
+  loadProgress += Math.random()*15 + 5;
+  if(loadProgress > 100) loadProgress = 100;
+  preloaderFill.style.width = loadProgress + '%';
+  if(loadProgress < 100){
+    setTimeout(animatePreloader, 200 + Math.random()*300);
+  } else {
+    setTimeout(()=>{
+      preloader.classList.add('hide');
+      setTimeout(()=>preloader.style.display='none', 800);
+    }, 500);
+  }
+}
+window.addEventListener('load', ()=> setTimeout(animatePreloader, 300));
+
+// ===========================
+// PARTICLES
+// ===========================
+const canvas = document.getElementById('particles');
+const ctx = canvas.getContext('2d');
+let particles = [];
+let mouse = {x:0, y:0};
+
+function resizeCanvas(){
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+}
+resizeCanvas();
+window.addEventListener('resize', resizeCanvas);
+
+class Particle{
+  constructor(){
+    this.reset();
+  }
+  reset(){
+    this.x = Math.random()*canvas.width;
+    this.y = Math.random()*canvas.height;
+    this.size = Math.random()*2 + .5;
+    this.speedX = (Math.random()-.5)*.3;
+    this.speedY = (Math.random()-.5)*.3;
+    this.opacity = Math.random()*.5 + .1;
+    this.color = ['#00C9A7','#7B61FF','#FF6B9D'][Math.floor(Math.random()*3)];
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    // Mouse attraction
+    const dx = mouse.x - this.x;
+    const dy = mouse.y - this.y;
+    const dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist < 150){
+      this.x += dx*0.002;
+      this.y += dy*0.002;
+    }
+    if(this.x < 0 || this.x > canvas.width) this.speedX *= -1;
+    if(this.y < 0 || this.y > canvas.height) this.speedY *= -1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+    ctx.fillStyle = this.color;
+    ctx.globalAlpha = this.opacity;
+    ctx.fill();
+    ctx.globalAlpha = 1;
+  }
+}
+
+for(let i=0; i<80; i++) particles.push(new Particle());
+
+function drawParticles(){
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  particles.forEach(p=>{p.update();p.draw()});
+  // Draw connections
+  for(let i=0;i<particles.length;i++){
+    for(let j=i+1;j<particles.length;j++){
+      const dx=particles[i].x-particles[j].x;
+      const dy=particles[i].y-particles[j].y;
+      const dist=Math.sqrt(dx*dx+dy*dy);
+      if(dist<120){
+        ctx.beginPath();
+        ctx.moveTo(particles[i].x,particles[i].y);
+        ctx.lineTo(particles[j].x,particles[j].y);
+        ctx.strokeStyle=`rgba(0,201,167,${.08*(1-dist/120)})`;
+        ctx.lineWidth=.5;
+        ctx.stroke();
+      }
+    }
+  }
+  requestAnimationFrame(drawParticles);
+}
+drawParticles();
+
+document.addEventListener('mousemove', e=>{
+  mouse.x=e.clientX;
+  mouse.y=e.clientY;
+});
+
+// ===========================
+// CUSTOM CURSOR
+// ===========================
+const cursorDot = document.getElementById('cursorDot');
+const cursorRing = document.getElementById('cursorRing');
+let cursorX=0,cursorY=0,ringX=0,ringY=0;
+
+document.addEventListener('mousemove',e=>{
+  cursorX=e.clientX;cursorY=e.clientY;
+});
+
+function animateCursor(){
+  ringX+=(cursorX-ringX)*.12;
+  ringY+=(cursorY-ringY)*.12;
+  cursorDot.style.transform=`translate(${cursorX-4}px,${cursorY-4}px)`;
+  cursorRing.style.left=ringX+'px';
+  cursorRing.style.top=ringY+'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
+
+document.querySelectorAll('a,button,input,.gift-box-container,.autocomplete-item,.program-card,.cta-badge').forEach(el=>{
+  el.addEventListener('mouseenter',()=>cursorRing.classList.add('hover'));
+  el.addEventListener('mouseleave',()=>cursorRing.classList.remove('hover'));
+});
+
+// ===========================
+// PROGRESS BAR
+// ===========================
+const progressBar = document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{
+  const scrollTop = window.scrollY;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  if(docHeight > 0){
+    progressBar.style.width = (scrollTop/docHeight*100)+'%';
+  }
+});
+
+// ===========================
+// AUTOCOMPLETE / NAME SEARCH
+// ===========================
+const nameInput = document.getElementById('nameInput');
+const autocompleteList = document.getElementById('autocompleteList');
+
+nameInput.addEventListener('input', function(){
+  const val = this.value.trim().toLowerCase();
+  autocompleteList.innerHTML = '';
+  if(val.length < 2){
+    autocompleteList.classList.remove('visible');
+    return;
+  }
+  const matches = employeeDB.filter(e => e.name.toLowerCase().includes(val));
+  if(matches.length === 0){
+    autocompleteList.classList.remove('visible');
+    return;
+  }
+  matches.forEach(emp =>{
+    const item = document.createElement('div');
+    item.className = 'autocomplete-item';
+    const initials = emp.name.split(' ').map(n=>n[0]).join('').substring(0,2);
+    item.innerHTML = `
+      <div class="avatar">${initials}</div>
+      <div class="info">
+        <div class="name">${emp.name}</div>
+        <div class="dept">${emp.dept}</div>
+      </div>
+    `;
+    item.addEventListener('click', ()=> selectEmployee(emp));
+    autocompleteList.appendChild(item);
+  });
+  autocompleteList.classList.add('visible');
+});
+
+document.addEventListener('click', e=>{
+  if(!e.target.closest('.search-container')){
+    autocompleteList.classList.remove('visible');
+  }
+});
+
+// ===========================
+// EMPLOYEE SELECTION -> GIFT
+// ===========================
+function selectEmployee(emp){
+  autocompleteList.classList.remove('visible');
+  nameInput.value = emp.name;
+
+  const firstName = emp.name.split(' ')[0];
+  document.getElementById('selectedName').textContent = firstName;
+
+  // Transition to gift section
+  const intro = document.getElementById('intro');
+  const giftSection = document.getElementById('gift-section');
+
+  intro.style.transition = 'opacity .8s ease, transform .8s ease';
+  intro.style.opacity = '0';
+  intro.style.transform = 'scale(.95)';
+
+  setTimeout(()=>{
+    intro.style.display = 'none';
+    giftSection.style.display = 'flex';
+
+    setTimeout(()=>{
+      document.getElementById('giftGreeting').classList.add('visible');
+    }, 100);
+  }, 800);
+}
+
+// ===========================
+// GIFT CLICK -> CINEMATIC
+// ===========================
+document.getElementById('giftBoxContainer').addEventListener('click', function(){
+  // Confetti explosion!
+  createConfetti();
+
+  const giftBox = document.getElementById('giftBox');
+  giftBox.style.transition = 'all .8s cubic-bezier(.16,1,.3,1)';
+  giftBox.style.transform = 'scale(1.3) rotateY(180deg)';
+  giftBox.style.opacity = '0';
+
+  setTimeout(()=>{
+    const giftSection = document.getElementById('gift-section');
+    const cinematic = document.getElementById('cinematic');
+
+    giftSection.style.transition = 'opacity .8s ease';
+    giftSection.style.opacity = '0';
+
+    setTimeout(()=>{
+      giftSection.style.display = 'none';
+      cinematic.style.display = 'block';
+
+      setTimeout(()=>{
+        document.getElementById('heroText').classList.add('visible');
+        initScrollAnimations();
+      }, 200);
+    }, 800);
+  }, 600);
+});
+
+// ===========================
+// CONFETTI
+// ===========================
+function createConfetti(){
+  const colors = ['#00C9A7','#7B61FF','#FF6B9D','#FFD700','#FF4500','#00BFFF'];
+  for(let i=0;i<60;i++){
+    const piece = document.createElement('div');
+    piece.className = 'confetti-piece';
+    const size = Math.random()*8+6;
+    piece.style.width = size+'px';
+    piece.style.height = size+'px';
+    piece.style.background = colors[Math.floor(Math.random()*colors.length)];
+    piece.style.left = (Math.random()*100)+'vw';
+    piece.style.top = (Math.random()*30+30)+'vh';
+    piece.style.borderRadius = Math.random()>.5?'50%':'2px';
+    piece.style.setProperty('--fall-duration', (Math.random()*2+2)+'s');
+    document.body.appendChild(piece);
+    setTimeout(()=>piece.remove(), 4000);
+  }
+}
+
+// ===========================
+// SCROLL ANIMATIONS
+// ===========================
+function initScrollAnimations(){
+  const observer = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+
+        // Animate stat counters
+        if(entry.target.querySelector('.stat-number')){
+          entry.target.querySelectorAll('.stat-number').forEach(num=>{
+            animateCounter(num);
+          });
+        }
+
+        // Animate timeline items
+        if(entry.target.querySelector('[data-timeline]')){
+          const items = entry.target.querySelectorAll('[data-timeline]');
+          items.forEach((item,i)=>{
+            setTimeout(()=>item.classList.add('visible'), i*200);
+          });
+        }
+      }
+    });
+  },{threshold:.2});
+
+  document.querySelectorAll('[data-animate]').forEach(el=>observer.observe(el));
+
+  // Program cards
+  const cardObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const cards = entry.target.querySelectorAll('[data-card]');
+        cards.forEach((card,i)=>{
+          setTimeout(()=>card.classList.add('visible'), i*150);
+        });
+      }
+    });
+  },{threshold:.1});
+
+  document.querySelectorAll('#sec-programs').forEach(el=>cardObserver.observe(el));
+
+  // Title animations
+  const titleObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        entry.target.style.opacity='1';
+        entry.target.style.transform='translateY(0)';
+      }
+    });
+  },{threshold:.3});
+
+  document.querySelectorAll('[data-animate-title]').forEach(el=>titleObserver.observe(el));
+
+  // CTA
+  const ctaObserver = new IntersectionObserver((entries)=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  },{threshold:.3});
+
+  document.querySelectorAll('.cta-content').forEach(el=>ctaObserver.observe(el));
+}
+
+// ===========================
+// COUNTER ANIMATION
+// ===========================
+function animateCounter(el){
+  const target = parseInt(el.getAttribute('data-target'));
+  let current = 0;
+  const increment = target / 40;
+  const timer = setInterval(()=>{
+    current += increment;
+    if(current >= target){
+      current = target;
+      clearInterval(timer);
+    }
+    el.textContent = Math.floor(current);
+    if(target === 100) el.textContent = Math.floor(current)+'%';
+  },50);
+}
+
+// ===========================
+// PARALLAX on BG ELEMENTS
+// ===========================
+window.addEventListener('scroll',()=>{
+  const scrollY = window.scrollY;
+  document.querySelectorAll('.bg-element').forEach(el=>{
+    const speed = .05;
+    const rect = el.parentElement.getBoundingClientRect();
+    el.style.transform = `translateY(${(rect.top * speed)}px)`;
+  });
+});
+
+// ===========================
+// KEYBOARD SHORTCUT: Enter to search
+// ===========================
+nameInput.addEventListener('keydown', e=>{
+  if(e.key === 'Enter'){
+    const firstItem = autocompleteList.querySelector('.autocomplete-item');
+    if(firstItem) firstItem.click();
+  }
+});
+
+// Hide custom cursor on mobile
+if('ontouchstart' in window){
+  cursorDot.style.display='none';
+  cursorRing.style.display='none';
+}
+
+// ===========================
+// THEME TOGGLE
+// ===========================
+const themeToggle = document.getElementById('themeToggle');
+const themeIcon = document.getElementById('themeIcon');
+const htmlElement = document.documentElement;
+
+// Load saved theme from localStorage
+const savedTheme = localStorage.getItem('transfarma_theme') || 'dark';
+htmlElement.setAttribute('data-theme', savedTheme);
+updateThemeIcon(savedTheme);
+
+// Theme toggle click handler
+themeToggle.addEventListener('click', () => {
+  const currentTheme = htmlElement.getAttribute('data-theme');
+  const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+  
+  htmlElement.setAttribute('data-theme', newTheme);
+  localStorage.setItem('transfarma_theme', newTheme);
+  updateThemeIcon(newTheme);
+});
+
+function updateThemeIcon(theme) {
+  themeIcon.textContent = theme === 'dark' ? '🌙' : '☀️';
+}
+
+
+</script>
+
+<!-- THEME TOGGLE -->
+<button class="theme-toggle" id="themeToggle" aria-label="Toggle light/dark mode">
+  <span id="themeIcon">🌙</span>
+</button>
+
+</body>
+</html>
